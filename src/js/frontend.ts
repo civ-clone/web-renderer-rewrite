@@ -3,5 +3,7 @@
 import { renderMandatoryActions } from '../ui/mandatory-actions/renderMandatoryActions';
 
 console.log('Frontend bundle loaded');
-console.log('Mandatory actions renderer available:', typeof renderMandatoryActions);
-
+console.log(
+  'Mandatory actions renderer available:',
+  typeof renderMandatoryActions
+);

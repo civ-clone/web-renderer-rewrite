@@ -1,4 +1,7 @@
-import { CommandOutcome } from '../../client/local-player/types';
+interface CommandOutcome {
+  status: string;
+  message: string;
+}
 
 export const showCommandOutcomeError = (
   outcome: CommandOutcome
