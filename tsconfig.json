@@ -9,11 +9,11 @@
     "moduleResolution": "nodenext",
     "strict": true,
     "target": "es2020",
+    "types": [
+      "node"
+    ]
   },
   "include": [
-    "src/js/Engine/*",
-    "src/js/Engine/Game.ts",
-    "main.ts",
-    "src/js/preload.ts"
+    "src/**/*.ts"
   ]
 }
