@@ -4,6 +4,7 @@ import Leader from '@civ-clone/core-civilization/Leader';
 import LeaderRegistry from '@civ-clone/core-civilization/LeaderRegistry';
 import Player from '@civ-clone/core-player/Player';
 import { LocalPlayer } from '../../../src/client/local-player/LocalPlayer';
+import { InProcessTransport } from '../../helpers/transportFixtures';
 
 class TestCivilization extends Civilization {}
 
@@ -20,7 +21,11 @@ describe('LocalPlayer core client behavior', () => {
     leaderRegistry.register(TestLeader);
 
     const player = new Player();
-    const localPlayer = new LocalPlayer(player, leaderRegistry);
+    const localPlayer = new LocalPlayer(
+      player,
+      leaderRegistry,
+      new InProcessTransport()
+    );
 
     localPlayer.chooseCivilization([TestCivilization]);
 

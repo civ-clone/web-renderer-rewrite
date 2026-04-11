@@ -1,9 +1,16 @@
-import {
-  FrontendCommandIntent,
-  LocalPlayerClientContract,
-} from '../../client/local-player/types';
+interface FrontendCommandIntent {
+  intentId: string;
+  type: string;
+  actionId: string;
+  payload: Record<string, unknown>;
+  submittedAt: number;
+}
+
+interface SubmittableLocalPlayer {
+  submitIntent(intent: FrontendCommandIntent): unknown;
+}
 
 export const submitMandatoryAction = (
-  localPlayer: LocalPlayerClientContract,
+  localPlayer: SubmittableLocalPlayer,
   intent: FrontendCommandIntent
 ) => localPlayer.submitIntent(intent);

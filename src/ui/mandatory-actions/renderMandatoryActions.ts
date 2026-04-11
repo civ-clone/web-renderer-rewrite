@@ -4,7 +4,5 @@ export const renderMandatoryActions = (
   actions: MandatoryActionView[]
 ): string[] =>
   actions.map((action) =>
-    [action.label, action.description, action.turnToken]
-      .filter(Boolean)
-      .join(' | ')
+    [action.label, action.description].filter(Boolean).join(' | ')
   );
