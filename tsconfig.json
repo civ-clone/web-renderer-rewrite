@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": [
+      "dom",
+      "es2020"
+    ],
+    "module": "es2020",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "target": "es2020",
+  },
+  "include": [
+    "src/js/Engine/*",
+    "src/js/Engine/Game.ts",
+    "main.ts",
+    "src/js/preload.ts"
+  ]
+}
