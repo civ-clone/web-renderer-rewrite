@@ -79,6 +79,9 @@ importers:
       '@civ-clone/core-city-improvement':
         specifier: ^0.1.0
         version: 0.1.4
+      '@civ-clone/core-civ-client':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@civ-clone/core-civilization':
         specifier: ^0.1.0
         version: 0.1.3
