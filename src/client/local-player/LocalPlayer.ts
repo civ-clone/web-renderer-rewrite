@@ -1,3 +1,7 @@
+import Client, { IClient } from '@civ-clone/core-client/Client';
+import { ChoiceMeta, ChoiceMetaData, DataForChoiceMeta } from '@civ-clone/core-client/ChoiceMeta';
+import Choice from '@civ-clone/core-client/Choice';
+import Player from '@civ-clone/core-player/Player';
 import { BackendRelayPort } from './backendRelay';
 import { validateIntent } from './intentValidation';
 import { intentToCommand } from './intentToCommand';
@@ -16,17 +20,57 @@ export interface LocalPlayerOptions {
   lockManager?: SubmissionLockManager;
 }
 
-export class LocalPlayer implements LocalPlayerClientContract {
+export class LocalPlayer extends Client implements LocalPlayerClientContract {
   private readonly supportedIntentTypes: string[];
   private readonly lockManager: SubmissionLockManager;
+  private relay!: BackendRelayPort;
+  private playerId!: string;
 
   constructor(
-    private readonly relay: BackendRelayPort,
-    private readonly playerId: string,
-    options: LocalPlayerOptions = {}
+    playerOrRelay: Player | BackendRelayPort,
+    relayOrPlayerId?: BackendRelayPort | string,
+    playerId?: string,
+    options?: LocalPlayerOptions
   ) {
-    this.supportedIntentTypes = options.supportedIntentTypes ?? ['default'];
-    this.lockManager = options.lockManager ?? new SubmissionLockManager();
+    // Support both signatures:
+    // (player, relay, playerId, options) - extends Client signature
+    // (relay, playerId, options) - backward compat for LocalPlayerClientContract
+    
+    let player: Player;
+    let relay: BackendRelayPort;
+    let resolvedPlayerId: string;
+    let opts: LocalPlayerOptions;
+
+    // Detect signature: check if first arg has getActivePlayerId (relay) vs player() (player)
+    if ('getActivePlayerId' in playerOrRelay) {
+      // First signature: (relay, playerId, options) - backward compat
+      relay = playerOrRelay as BackendRelayPort;
+      resolvedPlayerId = relayOrPlayerId as string;
+      opts = (playerId as LocalPlayerOptions) ?? {};
+      // Create a minimal stub player for backward compatibility
+      player = LocalPlayer.createStubPlayer(resolvedPlayerId);
+    } else {
+      // Second signature: (player, relay, playerId, options) - extends Client
+      player = playerOrRelay as Player;
+      relay = relayOrPlayerId as BackendRelayPort;
+      resolvedPlayerId = playerId!;
+      opts = options ?? {};
+    }
+
+    super(player);
+    this.relay = relay;
+    this.playerId = resolvedPlayerId;
+    this.supportedIntentTypes = opts.supportedIntentTypes ?? ['default'];
+    this.lockManager = opts.lockManager ?? new SubmissionLockManager();
+  }
+
+  private static createStubPlayer(id: string): Player {
+    // Create a minimal stub player that satisfies the Player interface
+    return {
+      playerId(): string {
+        return id;
+      },
+    } as unknown as Player;
   }
 
   async getMandatoryActions(): Promise<MandatoryActionView[]> {
@@ -35,6 +79,58 @@ export class LocalPlayer implements LocalPlayerClientContract {
     );
 
     return mandatoryActions.map(mapBackendActionToMandatoryActionView);
+  }
+
+  async chooseFromList<Name extends keyof ChoiceMetaDataMap>(
+    meta: ChoiceMeta<Name>
+  ): Promise<DataForChoiceMeta<ChoiceMeta<Name>>> {
+    const choices = meta.choices();
+    const choice = await this.promptUserForChoice(choices);
+
+    return choice.value();
+  }
+
+  async takeTurn(): Promise<void> {
+    const mandatoryActions = await this.getMandatoryActions();
+
+    if (mandatoryActions.length === 0) {
+      return;
+    }
+
+    for (const action of mandatoryActions) {
+      const intent: FrontendCommandIntent = {
+        intentId: `turn-${Date.now()}-${Math.random()}`,
+        type: action.intentType,
+        actionId: action.actionId,
+        turnToken: action.turnToken,
+        payload: action.metadata ?? {},
+        submittedAt: Date.now(),
+      };
+
+      const outcome = await this.submitIntent(intent);
+
+      if (outcome.status === 'success') {
+        continue;
+      }
+
+      if (!outcome.recoverable) {
+        throw new Error(
+          `Non-recoverable error during turn: ${outcome.message}`
+        );
+      }
+    }
+  }
+
+  private async promptUserForChoice<T>(
+    choices: Choice<T>[]
+  ): Promise<Choice<T>> {
+    // This is a placeholder implementation. In a real scenario, this would be
+    // handled by the frontend UI. For now, we return the first choice.
+    if (choices.length === 0) {
+      throw new Error('No choices available');
+    }
+
+    return choices[0];
   }
 
   async submitIntent(intent: FrontendCommandIntent): Promise<CommandOutcome> {
