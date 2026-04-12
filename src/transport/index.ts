@@ -6,3 +6,10 @@ export type {
   TransportRequest,
   TransportResponse,
 } from './TransportMessage.js';
+export {
+  deserializeFromTransport,
+  deserializeTransportResponse,
+  serializeForTransport,
+  serializeTransportRequest,
+  serializeTransportResponse,
+} from './serde.js';

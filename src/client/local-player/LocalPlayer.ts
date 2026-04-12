@@ -15,6 +15,10 @@ import Player from '@civ-clone/core-player/Player';
 import type { ITransport } from '../../transport/ITransport.js';
 import type { ITransportListener } from '../../transport/ITransportListener.js';
 import { TransportTimeoutError } from '../../transport/TransportMessage.js';
+import {
+  deserializeTransportResponse,
+  serializeTransportRequest,
+} from '../../transport/serde.js';
 import type {
   TransportRequest,
   TransportResponse,
@@ -190,7 +194,7 @@ export class LocalPlayer extends CivClient {
       // Send after registering so the response can never arrive before the
       // resolver is in place.
       try {
-        this.transport.send(request);
+        this.transport.send(serializeTransportRequest(request));
       } catch (error) {
         clearTimeout(timer);
         this.pendingRequests.delete(request.correlationId);
@@ -421,7 +425,8 @@ export class LocalPlayer extends CivClient {
   }
 
   private handleIncomingResponse(response: TransportResponse): void {
-    const pending = this.pendingRequests.get(response.correlationId);
+    const normalizedResponse = deserializeTransportResponse(response);
+    const pending = this.pendingRequests.get(normalizedResponse.correlationId);
 
     if (!pending) {
       // Orphan response — silently discard (SC-003).
@@ -429,7 +434,7 @@ export class LocalPlayer extends CivClient {
     }
 
     clearTimeout(pending.timer);
-    this.pendingRequests.delete(response.correlationId);
-    pending.resolve(response);
+    this.pendingRequests.delete(normalizedResponse.correlationId);
+    pending.resolve(normalizedResponse);
   }
 }

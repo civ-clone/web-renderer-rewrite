@@ -105,7 +105,7 @@ class PostMessageAdapterHarness implements ITransport, ITransportListener {
   constructor() {
     // Install stubs on globalThis so the adapter's send/receive work
     (globalThis as PostMessageGlobals).postMessage = (data: unknown) => {
-      this.sentRequests.push(structuredClone(data) as TransportRequest);
+      this.sentRequests.push(data as TransportRequest);
     };
     (globalThis as PostMessageGlobals).addEventListener = (
       name: string,
@@ -236,7 +236,7 @@ describe('PostMessageTransportAdapter contract', () => {
     await runChooseFromListRoundTrip(harness);
   });
 
-  it('preserves recursive payload structure through structured clone semantics', () => {
+  it('preserves recursive payload structure through adapter serde semantics', () => {
     const graph: Record<string, unknown> = {
       id: 'player-1',
     };
@@ -262,6 +262,8 @@ describe('PostMessageTransportAdapter contract', () => {
     const clonedCities = clonedGraph['cities'] as Record<string, unknown>[];
     const clonedCity = clonedCities[0];
 
+    // The adapter now serializes before postMessage, so recursion should be
+    // preserved without harness-level manual cloning.
     expect(clonedGraph).not.toBe(graph);
     expect(clonedGraph['self']).toBe(clonedGraph);
     expect(clonedCity['player']).toBe(clonedGraph);
