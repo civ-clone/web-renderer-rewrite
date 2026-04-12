@@ -1,7 +1,11 @@
 /**
  * Discriminant union of all supported transport message types.
  */
-export type TransportMessageType = 'mandatory-action' | 'choice-list';
+export type TransportMessageType =
+  | 'mandatory-action'
+  | 'choice-list'
+  | 'start-game-request'
+  | 'start-game-result';
 
 /**
  * A structured-clone-safe request dispatched from the engine context to the

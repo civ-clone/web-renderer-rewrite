@@ -1,8 +1,21 @@
 import type { MandatoryActionView } from '../../client/local-player/types';
+import type { SessionStatus } from '../../js/new-game/contracts';
+
+interface RenderMandatoryActionsOptions {
+  sessionStatus: SessionStatus;
+}
 
 export const renderMandatoryActions = (
-  actions: MandatoryActionView[]
-): string[] =>
-  actions.map((action) =>
+  actions: MandatoryActionView[],
+  options: RenderMandatoryActionsOptions = {
+    sessionStatus: 'active',
+  }
+): string[] => {
+  if (options.sessionStatus !== 'active' || !actions.length) {
+    return [];
+  }
+
+  return actions.map((action) =>
     [action.label, action.description].filter(Boolean).join(' | ')
   );
+};

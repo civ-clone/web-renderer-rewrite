@@ -24,16 +24,14 @@ import {
 export class PostMessageTransportAdapter
   implements ITransport, ITransportListener
 {
-  send(request: TransportRequest): void {
-    // In a Worker context globalThis.postMessage sends to the main thread.
-    (
-      globalThis as unknown as { postMessage: (data: unknown) => void }
-    ).postMessage(serializeTransportRequest(request));
-  }
+  private readonly handlers = new Set<(response: TransportResponse) => void>();
+  private listening = false;
 
-  onMessage(handler: (response: TransportResponse) => void): void {
-    // In a Worker context globalThis fires 'message' events for messages from
-    // the main thread.
+  private ensureListener(): void {
+    if (this.listening) {
+      return;
+    }
+
     (
       globalThis as unknown as {
         addEventListener: (
@@ -42,7 +40,27 @@ export class PostMessageTransportAdapter
         ) => void;
       }
     ).addEventListener('message', (event: { data: unknown }) => {
-      handler(deserializeTransportResponse(event.data as TransportResponse));
+      const response = deserializeTransportResponse(
+        event.data as TransportResponse
+      );
+
+      this.handlers.forEach((handler) => {
+        handler(response);
+      });
     });
+
+    this.listening = true;
+  }
+
+  send(request: TransportRequest): void {
+    // In a Worker context globalThis.postMessage sends to the main thread.
+    (
+      globalThis as unknown as { postMessage: (data: unknown) => void }
+    ).postMessage(serializeTransportRequest(request));
+  }
+
+  onMessage(handler: (response: TransportResponse) => void): void {
+    this.ensureListener();
+    this.handlers.add(handler);
   }
 }
