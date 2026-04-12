@@ -24,6 +24,24 @@ them by default.
 
 UI support helpers are in `src/ui/mandatory-actions/`.
 
+## New Game Bootstrap (MVP)
+
+The new-game bootstrap flow is centered in `src/js/new-game/`.
+
+- Sessions begin in `idle`; no automatic startup occurs on page load.
+- Frontend start intents are explicit (`source: "ui_button"`) and routed through
+  `createFrontendRuntime(...).clickStart()`.
+- Backend startup orchestration (`createStartNewGameOrchestrator`) enforces
+  initialization-before-bootstrap ordering and idempotent duplicate start handling.
+- Participant bootstrap is deterministic: one local participant first, then two
+  AI participants, each with player/client registrations.
+- Startup failures are normalized into recoverable typed codes
+  (`module_init`, `participant_create`, `registry_bind`, `transport`, `unknown`)
+  and surfaced via UI-friendly messages.
+
+MVP boundary: this flow intentionally excludes map rendering and focuses on
+startup/session creation plus mandatory-action visibility.
+
 ## Agent Workflow Conventions
 
 - Place temporary/debug artifacts in `.tmp/` (repository-local and git-ignored).

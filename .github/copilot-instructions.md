@@ -1,8 +1,10 @@
 # web-renderer-rewrite Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-11
+Auto-generated from all feature plans. Last updated: 2026-04-12
 
 ## Active Technologies
+- TypeScript 4.x (`typescript` from `package.json`) + `@civ-clone/core-engine`, `@civ-clone/core-player`, `@civ-clone/core-civ-client`, `@civ-clone/core-ai-client`, existing `@civ-clone/*` gameplay modules, current transport contract in `src/transport/` (003-create-feature-branch)
+- N/A (in-memory runtime bootstrap only; no persistence introduced) (003-create-feature-branch)
 
 - TypeScript 4.x (`typescript` from `package.json`) + `@civ-clone/core-client`, `@civ-clone/core-civ-client`, `@dom111/typed-event-emitter`, existing `@civ-clone/*` gameplay packages (002-swappable-transport-layer)
 
@@ -24,17 +26,10 @@ npx pnpm test && npx pnpm run lint
 TypeScript 4.x (`typescript` from `package.json`): Follow standard conventions
 
 ## Recent Changes
+- 003-create-feature-branch: Added TypeScript 4.x (`typescript` from `package.json`) + `@civ-clone/core-engine`, `@civ-clone/core-player`, `@civ-clone/core-civ-client`, `@civ-clone/core-ai-client`, existing `@civ-clone/*` gameplay modules, current transport contract in `src/transport/`
+- 003-create-feature-branch: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+- 003-create-feature-branch: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
-- 002-swappable-transport-layer: Added swappable transport layer and refactored `LocalPlayer` to require an injected transport while extending `@civ-clone/core-civ-client`
 
 <!-- MANUAL ADDITIONS START -->
-- Breaking changes are acceptable at this stage when they simplify the architecture. Do not preserve legacy compatibility by default.
-- `LocalPlayer` in `src/client/local-player/LocalPlayer.ts` now requires a transport at construction time. There is no no-transport fallback path.
-- Treat `@civ-clone/core-player` classes (`Player`, `PlayerAction`, `MandatoryPlayerAction`) as the source of truth for backend action modeling.
-- Frontend-facing labels are an i18n concern; do not expect backend actions to provide display strings.
-- Prefer `npx pnpm ...` for package-management and script execution requests.
-- Store temporary artifacts in a repository-local `.tmp/` directory (ignored by git), not in tracked project paths.
-- For `gh` commands, always quote arguments that contain `?` or `&` (for example API endpoints with query parameters).
-- Use `scripts/gh.sh` for all `gh` invocations so paging is always disabled (`GH_PAGER=cat`).
-- When posting PR comments/replies on behalf of the maintainer, explicitly state that the message is from an agent acting on the maintainer's behalf.
 <!-- MANUAL ADDITIONS END -->
