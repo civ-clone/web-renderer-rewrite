@@ -45,7 +45,13 @@ new LocalPlayer(player, leaderRegistry, transport, options)
 ### Important current caveat
 
 - The transport request/response loop is implemented.
-- `LocalPlayer.takeTurn()` currently serializes and waits for responses, but the full engine-side application of a selected mandatory action still needs explicit follow-through work.
+- `LocalPlayer.takeTurn()` consumes the frontend response payload, validates `actionIndex`, and applies the selected mandatory action on the engine side.
+
+### Agent execution conventions
+
+- Store temporary inspection artifacts under `.tmp/` only.
+- Quote `gh` command arguments that contain `?` or `&`.
+- PR comments/replies posted by automation should explicitly identify the commenter as an agent acting on the maintainer's behalf.
 
 ### See also
 

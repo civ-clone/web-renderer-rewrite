@@ -32,4 +32,7 @@ TypeScript 4.x (`typescript` from `package.json`): Follow standard conventions
 - Treat `@civ-clone/core-player` classes (`Player`, `PlayerAction`, `MandatoryPlayerAction`) as the source of truth for backend action modeling.
 - Frontend-facing labels are an i18n concern; do not expect backend actions to provide display strings.
 - Prefer `npx pnpm ...` for package-management and script execution requests.
+- Store temporary artifacts in a repository-local `.tmp/` directory (ignored by git), not in tracked project paths.
+- For `gh` commands, always quote arguments that contain `?` or `&` (for example API endpoints with query parameters).
+- When posting PR comments/replies on behalf of the maintainer, explicitly state that the message is from an agent acting on the maintainer's behalf.
 <!-- MANUAL ADDITIONS END -->
