@@ -52,6 +52,10 @@ class StubPlayer extends Player {
     this._mandatory.push(new MandatoryPlayerAction(this, value));
   }
 
+  addExecutableMandatoryAction(execute: () => void): void {
+    this.addMandatoryAction({ execute });
+  }
+
   clearMandatoryActions(): void {
     this._mandatory = [];
   }
@@ -151,7 +155,7 @@ async function runTakeTurnRoundTrip(
     ITransportListener
 ): Promise<void> {
   const player = new StubPlayer();
-  player.addMandatoryAction({ id: 'contract-action-1' });
+  player.addExecutableMandatoryAction(() => player.clearMandatoryActions());
 
   const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
     timeoutMs: 5000,
@@ -162,8 +166,7 @@ async function runTakeTurnRoundTrip(
   expect(transport.sentRequests.length).toBe(1);
   expect(transport.sentRequests[0].type).toBe('mandatory-action');
 
-  // Clear mandatory actions and respond
-  player.clearMandatoryActions();
+  // Resolve selected mandatory action
   transport.respondToLast({ actionIndex: 0 });
 
   await expect(turnPromise).resolves.toBeUndefined();
@@ -242,7 +245,7 @@ describe('MockWebSocketTransport contract (async latency)', () => {
     const transport = new MockWebSocketTransport(latencyMs);
 
     const player = new StubPlayer();
-    player.addMandatoryAction({ id: 'ws-action-1' });
+    player.addExecutableMandatoryAction(() => player.clearMandatoryActions());
 
     const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
       timeoutMs: 5000,
@@ -253,8 +256,6 @@ describe('MockWebSocketTransport contract (async latency)', () => {
     expect(transport.sentRequests.length).toBe(1);
     expect(transport.sentRequests[0].type).toBe('mandatory-action');
 
-    // Clear mandatory actions before the delayed response arrives
-    player.clearMandatoryActions();
     // respondToLast will schedule the handler call after `latencyMs`
     transport.respondToLast({ actionIndex: 0 });
 

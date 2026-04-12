@@ -33,6 +33,10 @@ class StubPlayer extends Player {
     return action;
   }
 
+  addExecutableMandatoryAction(execute: () => void): MandatoryPlayerAction {
+    return this.addMandatoryAction({ execute });
+  }
+
   clearMandatoryActions(): void {
     this._mandatory = [];
   }
@@ -44,7 +48,7 @@ describe('takeTurn() round-trip integration', () => {
   it('dispatches mandatory actions through the transport and resolves when the matching response arrives', async () => {
     const transport = new InProcessTransport();
     const player = new StubPlayer();
-    player.addMandatoryAction({ id: 'action-1', type: 'unit-move' });
+    player.addExecutableMandatoryAction(() => player.clearMandatoryActions());
 
     const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
       timeoutMs: 5000,
@@ -66,9 +70,7 @@ describe('takeTurn() round-trip integration', () => {
     expect(Array.isArray(actions)).toBe(true);
     expect((actions as unknown[]).length).toBe(1);
 
-    // Simulate the frontend resolving the action: first clear mandatory
-    // actions so the while-loop exits, then post the response.
-    player.clearMandatoryActions();
+    // Simulate the frontend resolving the selected mandatory action.
     transport.respondToLast({ actionIndex: 0 });
 
     // takeTurn() must complete without error
@@ -78,7 +80,10 @@ describe('takeTurn() round-trip integration', () => {
   it('loops until all mandatory actions have been handled', async () => {
     const transport = new InProcessTransport();
     const player = new StubPlayer();
-    player.addMandatoryAction({ id: 'action-1' });
+    player.addExecutableMandatoryAction(() => {
+      player.clearMandatoryActions();
+      player.addExecutableMandatoryAction(() => player.clearMandatoryActions());
+    });
 
     const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
       timeoutMs: 5000,
@@ -89,17 +94,14 @@ describe('takeTurn() round-trip integration', () => {
     // First request dispatched
     expect(transport.sentRequests.length).toBe(1);
 
-    // After this response, add another mandatory action to force a second loop
-    player.clearMandatoryActions();
-    player.addMandatoryAction({ id: 'action-2' });
+    // Resolve the first action; executing it schedules another mandatory action.
     transport.respondToLast({ actionIndex: 0 });
 
     // Second request dispatched
     await new Promise((r) => setTimeout(r, 0));
     expect(transport.sentRequests.length).toBe(2);
 
-    // Clear all and resolve the second request
-    player.clearMandatoryActions();
+    // Resolve the second action; executing it clears the queue.
     transport.respondToLast({ actionIndex: 0 });
 
     await expect(turnPromise).resolves.toBeUndefined();

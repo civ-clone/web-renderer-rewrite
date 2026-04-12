@@ -6,6 +6,7 @@ import {
 import LeaderRegistry, {
   instance as leaderRegistryInstance,
 } from '@civ-clone/core-civilization/LeaderRegistry';
+import MandatoryPlayerAction from '@civ-clone/core-player/MandatoryPlayerAction';
 import Player from '@civ-clone/core-player/Player';
 import type { ITransport } from '../../transport/ITransport.js';
 import type { ITransportListener } from '../../transport/ITransportListener.js';
@@ -30,6 +31,11 @@ interface PendingEntry {
   resolve: (response: TransportResponse) => void;
   reject: (error: Error) => void;
   timer: ReturnType<typeof setTimeout>;
+}
+
+interface MandatoryActionResponsePayload {
+  actionIndex: number;
+  selection?: unknown;
 }
 
 // ---------------------------------------------------------------------------
@@ -102,7 +108,17 @@ export class LocalPlayer extends CivClient {
       };
 
       // Dispatch and await the matching response.
-      await this.sendAndAwait(request);
+      const response = await this.sendAndAwait(request);
+      const { actionIndex, selection } =
+        this.parseMandatoryActionResponse(response.payload);
+
+      if (actionIndex < 0 || actionIndex >= actions.length) {
+        throw new RangeError(
+          `LocalPlayer: invalid mandatory action index ${actionIndex} (actions.length=${actions.length})`
+        );
+      }
+
+      await this.performMandatoryAction(actions[actionIndex], selection);
     }
   }
 
@@ -169,8 +185,161 @@ export class LocalPlayer extends CivClient {
 
       // Send after registering so the response can never arrive before the
       // resolver is in place.
-      this.transport.send(request);
+      try {
+        this.transport.send(request);
+      } catch (error) {
+        clearTimeout(timer);
+        this.pendingRequests.delete(request.correlationId);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
     });
+  }
+
+  private parseMandatoryActionResponse(
+    payload: unknown
+  ): MandatoryActionResponsePayload {
+    if (typeof payload === 'number') {
+      return { actionIndex: payload };
+    }
+
+    if (typeof payload !== 'object' || payload === null) {
+      throw new TypeError(
+        `LocalPlayer: invalid mandatory-action payload ${String(payload)}`
+      );
+    }
+
+    const record = payload as Record<string, unknown>;
+    const actionIndex = record['actionIndex'];
+
+    if (!Number.isInteger(actionIndex)) {
+      throw new TypeError(
+        `LocalPlayer: mandatory-action payload requires integer actionIndex, got ${String(actionIndex)}`
+      );
+    }
+
+    return {
+      actionIndex: actionIndex as number,
+      selection: record['selection'],
+    };
+  }
+
+  private asSelectionIndex(selection: unknown, length: number): number | null {
+    if (!Number.isInteger(selection)) {
+      return null;
+    }
+
+    const index = selection as number;
+
+    if (index < 0 || index >= length) {
+      throw new RangeError(
+        `LocalPlayer: selection index ${index} out of range (length=${length})`
+      );
+    }
+
+    return index;
+  }
+
+  private async performMandatoryAction(
+    action: MandatoryPlayerAction,
+    selection?: unknown
+  ): Promise<void> {
+    const value = action.value() as unknown;
+
+    if (typeof value === 'function') {
+      await Promise.resolve((value as (selection?: unknown) => unknown)(selection));
+      return;
+    }
+
+    if (typeof value !== 'object' || value === null) {
+      throw new TypeError(
+        `LocalPlayer: unsupported mandatory action value type for ${action.constructor.name}`
+      );
+    }
+
+    const executable = value as {
+      execute?: (selection?: unknown) => unknown;
+      available?: () => unknown[];
+      research?: (advance: unknown) => void;
+      build?: (item: unknown) => void;
+      actions?: () => unknown[];
+      action?: (selectedAction: unknown) => void;
+      activate?: () => void;
+    };
+
+    if (typeof executable.execute === 'function') {
+      await Promise.resolve(executable.execute(selection));
+      return;
+    }
+
+    if (
+      typeof executable.available === 'function' &&
+      typeof executable.research === 'function'
+    ) {
+      const available = executable.available();
+      const selected = this.asSelectionIndex(selection, available.length);
+
+      if (selected === null) {
+        throw new TypeError(
+          'LocalPlayer: research action requires integer `selection` index'
+        );
+      }
+
+      executable.research(available[selected]);
+      return;
+    }
+
+    if (
+      typeof executable.available === 'function' &&
+      typeof executable.build === 'function'
+    ) {
+      const available = executable.available();
+      const selected = this.asSelectionIndex(selection, available.length);
+
+      if (selected === null) {
+        throw new TypeError(
+          'LocalPlayer: city-build action requires integer `selection` index'
+        );
+      }
+
+      const buildItem = available[selected] as { item?: () => unknown };
+      executable.build(
+        buildItem && typeof buildItem.item === 'function'
+          ? buildItem.item()
+          : buildItem
+      );
+      return;
+    }
+
+    if (
+      typeof executable.actions === 'function' &&
+      typeof executable.action === 'function'
+    ) {
+      const actions = executable.actions();
+      const selected = this.asSelectionIndex(selection, actions.length);
+
+      if (selected === null) {
+        if (typeof executable.activate === 'function') {
+          executable.activate();
+          return;
+        }
+
+        throw new TypeError(
+          'LocalPlayer: unit action requires integer `selection` index'
+        );
+      }
+
+      executable.action(actions[selected]);
+      return;
+    }
+
+    if (typeof executable.activate === 'function' && selection === undefined) {
+      executable.activate();
+      return;
+    }
+
+    throw new TypeError(
+      `LocalPlayer: unsupported mandatory action value for ${action.constructor.name}`
+    );
   }
 
   private handleIncomingResponse(response: TransportResponse): void {

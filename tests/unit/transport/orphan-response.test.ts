@@ -46,11 +46,12 @@ describe('Orphan response handling', () => {
     transport.respond({ correlationId: 'ghost-id-xyz', payload: 0 });
 
     // The real promise must still be pending (not resolved by the ghost response)
-    const settled = await Promise.race([
-      realPromise.then(() => 'resolved'),
-      Promise.resolve('pending'),
-    ]);
-    expect(settled).toBe('pending');
+    let settled = false;
+    realPromise.then(() => {
+      settled = true;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(settled).toBe(false);
 
     // Now properly resolve the real request
     transport.respondTo(realCorrId, 0);
