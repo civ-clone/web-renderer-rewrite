@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EndTurn } from '@civ-clone/civ1-player/PlayerActions';
 import LeaderRegistry from '@civ-clone/core-civilization/LeaderRegistry';
 import MandatoryPlayerAction from '@civ-clone/core-player/MandatoryPlayerAction';
 import Player from '@civ-clone/core-player/Player';
@@ -28,7 +29,7 @@ class StubPlayer extends Player {
   }
 
   addMandatoryAction(value: unknown): MandatoryPlayerAction {
-    const action = new MandatoryPlayerAction(this, value);
+    const action = new EndTurn(this, value);
     this._mandatory.push(action);
     return action;
   }

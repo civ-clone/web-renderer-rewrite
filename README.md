@@ -34,4 +34,6 @@ UI support helpers are in `src/ui/mandatory-actions/`.
 
 - Evaluate adding a turn token or revision marker to action payloads to improve
   stale UI action detection in multi-step or delayed client interactions.
+- Explore a pluggable mandatory-action handler registry so new `PlayerAction`
+  subclasses can be integrated without changing `LocalPlayer` core logic.
 
