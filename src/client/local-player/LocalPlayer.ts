@@ -1,8 +1,12 @@
 import CivClient from '@civ-clone/core-civ-client/Client';
+import { EndTurn } from '@civ-clone/civ1-player/PlayerActions';
+import { ActiveUnit } from '@civ-clone/civ1-unit/PlayerActions';
+import ChooseResearch from '@civ-clone/civ1-science/PlayerActions/ChooseResearch';
 import {
   ChoiceMeta,
   DataForChoiceMeta,
 } from '@civ-clone/core-client/ChoiceMeta';
+import CityBuild from '@civ-clone/core-city-build/PlayerActions/CityBuild';
 import LeaderRegistry, {
   instance as leaderRegistryInstance,
 } from '@civ-clone/core-civilization/LeaderRegistry';
@@ -245,8 +249,30 @@ export class LocalPlayer extends CivClient {
   ): Promise<void> {
     const value = action.value() as unknown;
 
+    if (action instanceof EndTurn) {
+      await this.performEndTurn(value, selection);
+      return;
+    }
+
+    if (action instanceof ChooseResearch) {
+      this.performChooseResearch(value, selection);
+      return;
+    }
+
+    if (action instanceof CityBuild) {
+      this.performCityBuild(value, selection);
+      return;
+    }
+
+    if (action instanceof ActiveUnit) {
+      this.performActiveUnit(value, selection);
+      return;
+    }
+
+    // TODO: Introduce a pluggable action-handler registry so new PlayerActions
+    // can be supported without editing LocalPlayer core logic.
     if (typeof value === 'function') {
-      await Promise.resolve((value as (selection?: unknown) => unknown)(selection));
+      await Promise.resolve((value as () => unknown)());
       return;
     }
 
@@ -256,26 +282,53 @@ export class LocalPlayer extends CivClient {
       );
     }
 
-    const executable = value as {
-      execute?: (selection?: unknown) => unknown;
-      available?: () => unknown[];
-      research?: (advance: unknown) => void;
-      build?: (item: unknown) => void;
-      actions?: () => unknown[];
-      action?: (selectedAction: unknown) => void;
-      activate?: () => void;
-    };
+    const executable = value as { execute?: () => unknown };
+
+    if (typeof executable.execute === 'function') {
+      await Promise.resolve(executable.execute());
+      return;
+    }
+
+    throw new TypeError(
+      `LocalPlayer: unsupported mandatory action ${action.constructor.name}`
+    );
+  }
+
+  private async performEndTurn(value: unknown, selection?: unknown): Promise<void> {
+    if (typeof value === 'function') {
+      await Promise.resolve((value as (selection?: unknown) => unknown)(selection));
+      return;
+    }
+
+    if (typeof value !== 'object' || value === null) {
+      throw new TypeError('LocalPlayer: EndTurn value is not executable');
+    }
+
+    const executable = value as { execute?: (selection?: unknown) => unknown };
 
     if (typeof executable.execute === 'function') {
       await Promise.resolve(executable.execute(selection));
       return;
     }
 
+    throw new TypeError('LocalPlayer: EndTurn value is not executable');
+  }
+
+  private performChooseResearch(value: unknown, selection?: unknown): void {
+    if (typeof value !== 'object' || value === null) {
+      throw new TypeError('LocalPlayer: ChooseResearch value is not an object');
+    }
+
+    const research = value as {
+      available?: () => unknown[];
+      research?: (advance: unknown) => void;
+    };
+
     if (
-      typeof executable.available === 'function' &&
-      typeof executable.research === 'function'
+      typeof research.available === 'function' &&
+      typeof research.research === 'function'
     ) {
-      const available = executable.available();
+      const available = research.available();
       const selected = this.asSelectionIndex(selection, available.length);
 
       if (selected === null) {
@@ -284,15 +337,28 @@ export class LocalPlayer extends CivClient {
         );
       }
 
-      executable.research(available[selected]);
+      research.research(available[selected]);
       return;
     }
 
+    throw new TypeError('LocalPlayer: ChooseResearch value is not executable');
+  }
+
+  private performCityBuild(value: unknown, selection?: unknown): void {
+    if (typeof value !== 'object' || value === null) {
+      throw new TypeError('LocalPlayer: CityBuild value is not an object');
+    }
+
+    const cityBuild = value as {
+      available?: () => unknown[];
+      build?: (item: unknown) => void;
+    };
+
     if (
-      typeof executable.available === 'function' &&
-      typeof executable.build === 'function'
+      typeof cityBuild.available === 'function' &&
+      typeof cityBuild.build === 'function'
     ) {
-      const available = executable.available();
+      const available = cityBuild.available();
       const selected = this.asSelectionIndex(selection, available.length);
 
       if (selected === null) {
@@ -302,7 +368,7 @@ export class LocalPlayer extends CivClient {
       }
 
       const buildItem = available[selected] as { item?: () => unknown };
-      executable.build(
+      cityBuild.build(
         buildItem && typeof buildItem.item === 'function'
           ? buildItem.item()
           : buildItem
@@ -310,16 +376,30 @@ export class LocalPlayer extends CivClient {
       return;
     }
 
+    throw new TypeError('LocalPlayer: CityBuild value is not executable');
+  }
+
+  private performActiveUnit(value: unknown, selection?: unknown): void {
+    if (typeof value !== 'object' || value === null) {
+      throw new TypeError('LocalPlayer: ActiveUnit value is not an object');
+    }
+
+    const unit = value as {
+      actions?: () => unknown[];
+      action?: (selectedAction: unknown) => void;
+      activate?: () => void;
+    };
+
     if (
-      typeof executable.actions === 'function' &&
-      typeof executable.action === 'function'
+      typeof unit.actions === 'function' &&
+      typeof unit.action === 'function'
     ) {
-      const actions = executable.actions();
+      const actions = unit.actions();
       const selected = this.asSelectionIndex(selection, actions.length);
 
       if (selected === null) {
-        if (typeof executable.activate === 'function') {
-          executable.activate();
+        if (typeof unit.activate === 'function') {
+          unit.activate();
           return;
         }
 
@@ -328,18 +408,16 @@ export class LocalPlayer extends CivClient {
         );
       }
 
-      executable.action(actions[selected]);
+      unit.action(actions[selected]);
       return;
     }
 
-    if (typeof executable.activate === 'function' && selection === undefined) {
-      executable.activate();
+    if (typeof unit.activate === 'function' && selection === undefined) {
+      unit.activate();
       return;
     }
 
-    throw new TypeError(
-      `LocalPlayer: unsupported mandatory action value for ${action.constructor.name}`
-    );
+    throw new TypeError('LocalPlayer: ActiveUnit value is not executable');
   }
 
   private handleIncomingResponse(response: TransportResponse): void {

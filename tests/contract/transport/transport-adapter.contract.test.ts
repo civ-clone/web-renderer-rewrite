@@ -11,6 +11,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { EndTurn } from '@civ-clone/civ1-player/PlayerActions';
 import Civilization from '@civ-clone/core-civilization/Civilization';
 import Leader from '@civ-clone/core-civilization/Leader';
 import LeaderRegistry from '@civ-clone/core-civilization/LeaderRegistry';
@@ -49,7 +50,7 @@ class StubPlayer extends Player {
   }
 
   addMandatoryAction(value: unknown): void {
-    this._mandatory.push(new MandatoryPlayerAction(this, value));
+    this._mandatory.push(new EndTurn(this, value));
   }
 
   addExecutableMandatoryAction(execute: () => void): void {
@@ -104,7 +105,7 @@ class PostMessageAdapterHarness implements ITransport, ITransportListener {
   constructor() {
     // Install stubs on globalThis so the adapter's send/receive work
     (globalThis as PostMessageGlobals).postMessage = (data: unknown) => {
-      this.sentRequests.push(data as TransportRequest);
+      this.sentRequests.push(structuredClone(data) as TransportRequest);
     };
     (globalThis as PostMessageGlobals).addEventListener = (
       name: string,
@@ -233,6 +234,37 @@ describe('PostMessageTransportAdapter contract', () => {
 
   it('chooseFromList() round-trip produces the correct outcome', async () => {
     await runChooseFromListRoundTrip(harness);
+  });
+
+  it('preserves recursive payload structure through structured clone semantics', () => {
+    const graph: Record<string, unknown> = {
+      id: 'player-1',
+    };
+    const city: Record<string, unknown> = {
+      id: 'city-1',
+      player: graph,
+    };
+
+    graph['cities'] = [city];
+    graph['self'] = graph;
+
+    harness.send({
+      correlationId: 'recursive-1',
+      type: 'mandatory-action',
+      payload: {
+        graph,
+      },
+    });
+
+    const clonedGraph = (
+      harness.sentRequests[0].payload as { graph: Record<string, unknown> }
+    ).graph;
+    const clonedCities = clonedGraph['cities'] as Record<string, unknown>[];
+    const clonedCity = clonedCities[0];
+
+    expect(clonedGraph).not.toBe(graph);
+    expect(clonedGraph['self']).toBe(clonedGraph);
+    expect(clonedCity['player']).toBe(clonedGraph);
   });
 });
 
