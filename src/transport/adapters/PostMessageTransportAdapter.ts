@@ -4,6 +4,10 @@ import type {
   TransportRequest,
   TransportResponse,
 } from '../TransportMessage.js';
+import {
+  deserializeTransportResponse,
+  serializeTransportRequest,
+} from '../serde.js';
 
 /**
  * Production Web Worker / SharedWorker transport adapter.
@@ -24,7 +28,7 @@ export class PostMessageTransportAdapter
     // In a Worker context globalThis.postMessage sends to the main thread.
     (
       globalThis as unknown as { postMessage: (data: unknown) => void }
-    ).postMessage(request);
+    ).postMessage(serializeTransportRequest(request));
   }
 
   onMessage(handler: (response: TransportResponse) => void): void {
@@ -38,7 +42,7 @@ export class PostMessageTransportAdapter
         ) => void;
       }
     ).addEventListener('message', (event: { data: unknown }) => {
-      handler(event.data as TransportResponse);
+      handler(deserializeTransportResponse(event.data as TransportResponse));
     });
   }
 }
