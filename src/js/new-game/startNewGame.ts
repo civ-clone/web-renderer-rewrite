@@ -39,8 +39,8 @@ export interface StartNewGameOrchestratorOptions {
   initializationModules?: InitializationModule[];
   bootstrapParticipants?: (sessionId: string) => ParticipantBootstrapResult;
   bindRegistries?: (
-	result: ParticipantBootstrapResult,
-	registries: RuntimeRegistries
+    result: ParticipantBootstrapResult,
+    registries: RuntimeRegistries
   ) => void;
 }
 
@@ -56,12 +56,33 @@ const defaultBindRegistries = (
   registries: RuntimeRegistries
 ): void => {
   result.participants.forEach((participant) => {
-	registries.participants.push(participant.participantId);
-	registries.players.push(participant.playerId);
+    registries.participants.push(participant.participantId);
+    registries.players.push(participant.playerId);
   });
   result.bindings.forEach((binding) => {
-	registries.clients.push(`${binding.playerId}:${binding.clientType}`);
+    registries.clients.push(`${binding.playerId}:${binding.clientType}`);
   });
+};
+
+const validateBootstrapResult = (
+  bootstrapResult: ParticipantBootstrapResult,
+  registries: RuntimeRegistries
+): void => {
+  const expectedParticipants = bootstrapResult.summary.totalParticipants;
+
+  if (bootstrapResult.participants.length !== expectedParticipants) {
+    throw new Error(
+      `participant_create: expected ${expectedParticipants} participants, got ${bootstrapResult.participants.length}`
+    );
+  }
+
+  if (
+    registries.participants.length !== expectedParticipants ||
+    registries.players.length !== expectedParticipants ||
+    registries.clients.length !== expectedParticipants
+  ) {
+    throw new Error('registry_bind: participant registrations incomplete');
+  }
 };
 
 export const createStartNewGameOrchestrator = (
@@ -69,69 +90,58 @@ export const createStartNewGameOrchestrator = (
 ): StartNewGameOrchestrator => {
   const now = options.now ?? (() => Date.now());
   const createSessionId =
-	options.createSessionId ?? (() => `session-${now().toString(36)}`);
+    options.createSessionId ?? (() => `session-${now().toString(36)}`);
   const profile =
-	options.initializationProfile ?? createDefaultInitializationProfile();
+    options.initializationProfile ?? createDefaultInitializationProfile();
   const initializationModules =
-	options.initializationModules ??
-	profile.modules.map((name) => ({
-	  name,
-	  initialize: () => undefined,
-	}));
+    options.initializationModules ??
+    profile.modules.map((name) => ({
+      name,
+      initialize: () => undefined,
+    }));
   const participantBootstrap = options.bootstrapParticipants ?? bootstrapParticipants;
   const bindRegistries = options.bindRegistries ?? defaultBindRegistries;
 
   const registries: RuntimeRegistries = {
-	participants: [],
-	players: [],
-	clients: [],
+    participants: [],
+    players: [],
+    clients: [],
   };
 
   let state = createIdleSessionState();
   let summary: ParticipantSummary | undefined;
 
   return {
-	registries,
-	sessionState: () => state,
-	participantSummary: () => summary,
-	startNewGame: async (request: StartGameRequest): Promise<StartGameResult> => {
-	  if (!canAcceptStartRequest(state)) {
-		return createAlreadyStartedResult(request.requestId, state.sessionId, summary);
-	  }
+    registries,
+    sessionState: () => state,
+    participantSummary: () => summary,
+    startNewGame: async (request: StartGameRequest): Promise<StartGameResult> => {
+      if (!canAcceptStartRequest(state)) {
+        return createAlreadyStartedResult(request.requestId, state.sessionId, summary);
+      }
 
-	  const sessionId = createSessionId();
-	  state = transitionToStarting(sessionId);
+      const sessionId = createSessionId();
+      state = transitionToStarting(sessionId);
 
-	  try {
-		await initializeProfile(profile, initializationModules, now);
+      try {
+        await initializeProfile(profile, initializationModules, now);
 
-		const bootstrapResult = participantBootstrap(sessionId);
+        const bootstrapResult = participantBootstrap(sessionId);
+        bindRegistries(bootstrapResult, registries);
+        validateBootstrapResult(bootstrapResult, registries);
 
-		if (bootstrapResult.participants.length !== 3) {
-		  throw new Error('participant_create: expected exactly 3 participants');
-		}
+        summary = bootstrapResult.summary;
+        state = transitionToActive(sessionId);
 
-		bindRegistries(bootstrapResult, registries);
+        return createStartedResult(request.requestId, sessionId, summary);
+      } catch (error) {
+        const failure = classifyStartupFailure(error, now());
+        state = transitionToFailed(sessionId, failure);
 
-		if (
-		  registries.participants.length !== 3 ||
-		  registries.players.length !== 3 ||
-		  registries.clients.length !== 3
-		) {
-		  throw new Error('registry_bind: participant registrations incomplete');
-		}
-
-		summary = bootstrapResult.summary;
-		state = transitionToActive(sessionId, now());
-
-		return createStartedResult(request.requestId, sessionId, summary.allRegistered);
-	  } catch (error) {
-		const failure = classifyStartupFailure(error, now());
-		state = transitionToFailed(sessionId, failure);
-
-		return createFailedResult(request.requestId, failure);
-	  }
-	},
+        return createFailedResult(request.requestId, failure);
+      }
+    },
   };
 };
+
 

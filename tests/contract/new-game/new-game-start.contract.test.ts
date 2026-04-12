@@ -18,7 +18,12 @@ describe('new-game start contract', () => {
   });
 
   it('represents successful starts with fixed participant counts', () => {
-    const result = createStartedResult('req-1', 'session-1', true);
+    const result = createStartedResult('req-1', 'session-1', {
+      totalParticipants: 3,
+      localParticipants: 1,
+      aiParticipants: 2,
+      allRegistered: true,
+    });
 
     expect(result.status).toBe('started');
     expect(result.participantSummary).toEqual({
@@ -43,4 +48,5 @@ describe('new-game start contract', () => {
     expect(failed.failure?.recoverable).toBe(true);
   });
 });
+
 

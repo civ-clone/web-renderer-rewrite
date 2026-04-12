@@ -11,7 +11,7 @@ describe('new-game session state machine', () => {
   it('transitions idle -> starting -> active', () => {
     const idle = createIdleSessionState();
     const starting = transitionToStarting('session-1');
-    const active = transitionToActive('session-1', 1);
+    const active = transitionToActive('session-1');
 
     expect(idle.status).toBe('idle');
     expect(starting.status).toBe('starting');
@@ -31,4 +31,5 @@ describe('new-game session state machine', () => {
     expect(canAcceptStartRequest(transitionToStarting('session-2'))).toBe(false);
   });
 });
+
 

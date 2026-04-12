@@ -1,3 +1,6 @@
+import type { SessionStatus } from '../../js/new-game/contracts';
+export type { SessionStatus };
+
 export type FrontendIntentType = string;
 
 export interface MandatoryActionView {
@@ -9,12 +12,12 @@ export interface MandatoryActionView {
   metadata?: Record<string, unknown>;
 }
 
-export type SessionStatus = 'idle' | 'starting' | 'active' | 'failed';
-
 export interface LocalPlayerSessionView {
   sessionId?: string;
   status: SessionStatus;
   canStart: boolean;
   startupFailureMessage?: string;
 }
+
+
 

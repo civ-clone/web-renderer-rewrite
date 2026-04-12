@@ -16,14 +16,14 @@ export interface StartGameRequest {
 export interface StartupFailure {
   code: StartupFailureCode;
   message: string;
-  recoverable: true;
+  recoverable: boolean;
   detectedAt: number;
 }
 
 export interface ParticipantSummary {
-  totalParticipants: 3;
-  localParticipants: 1;
-  aiParticipants: 2;
+  totalParticipants: number;
+  localParticipants: number;
+  aiParticipants: number;
   allRegistered: boolean;
 }
 
@@ -76,17 +76,12 @@ export interface StartupSessionSnapshot {
 export const createStartedResult = (
   requestId: string,
   sessionId: string,
-  allRegistered: boolean
+  participantSummary: ParticipantSummary
 ): StartGameResult => ({
   requestId,
   status: 'started',
   sessionId,
-  participantSummary: {
-    totalParticipants: 3,
-    localParticipants: 1,
-    aiParticipants: 2,
-    allRegistered,
-  },
+  participantSummary,
 });
 
 export const createAlreadyStartedResult = (

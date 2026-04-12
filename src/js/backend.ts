@@ -19,9 +19,8 @@ export const createBackendRuntime = (
   const orchestrator = createStartNewGameOrchestrator(options);
 
   return {
-	orchestrator,
-	startGame: (request: StartGameRequest) => orchestrator.startNewGame(request),
+    orchestrator,
+    startGame: (request: StartGameRequest) => orchestrator.startNewGame(request),
   };
 };
 
-console.log('Backend bundle loaded');

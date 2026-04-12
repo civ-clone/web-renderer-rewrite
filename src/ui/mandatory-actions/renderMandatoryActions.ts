@@ -1,7 +1,8 @@
 import type { MandatoryActionView } from '../../client/local-player/types';
+import type { SessionStatus } from '../../js/new-game/contracts';
 
 interface RenderMandatoryActionsOptions {
-  sessionStatus: 'idle' | 'starting' | 'active' | 'failed';
+  sessionStatus: SessionStatus;
 }
 
 export const renderMandatoryActions = (

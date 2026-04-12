@@ -80,4 +80,3 @@ export const createFrontendRuntime = (
   };
 };
 
-console.log('Frontend bundle loaded');

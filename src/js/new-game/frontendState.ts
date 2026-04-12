@@ -36,7 +36,7 @@ export const reduceFrontendStateFromStartResult = (
   if (result.status === 'started') {
     return {
       ...current,
-      session: transitionToActive(result.sessionId ?? 'session-unknown', now),
+      session: transitionToActive(result.sessionId ?? 'session-unknown'),
       canStart: false,
       startupFailureMessage: null,
     };
@@ -66,4 +66,5 @@ export const reduceFrontendStateFromStartResult = (
     mandatoryActionsVisible: false,
   };
 };
+
 

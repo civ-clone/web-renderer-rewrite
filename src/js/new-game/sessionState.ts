@@ -15,10 +15,7 @@ export const transitionToStarting = (sessionId: string): SessionStateView => ({
   canStart: false,
 });
 
-export const transitionToActive = (
-  sessionId: string,
-  _startedAt: number
-): SessionStateView => ({
+export const transitionToActive = (sessionId: string): SessionStateView => ({
   sessionId,
   status: 'active',
   canStart: false,
@@ -47,4 +44,5 @@ export const snapshotSessionState = (
   participantSummary,
   failure: state.startupFailure,
 });
+
 
