@@ -1,4 +1,4 @@
-import { MandatoryActionView } from '../../client/local-player/types';
+import type { MandatoryActionView } from '../../client/local-player/types';
 
 export const renderMandatoryActions = (
   actions: MandatoryActionView[]
