@@ -209,6 +209,9 @@ GitHub.sublime-settings
 # Local History for Visual Studio Code
 .history
 
+# Repository-local temporary workspace for agent/tool scratch files
+.tmp/
+
 src/js/plugins.ts
 .dist/*
 build.json

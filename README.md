@@ -24,6 +24,12 @@ them by default.
 
 UI support helpers are in `src/ui/mandatory-actions/`.
 
+## Agent Workflow Conventions
+
+- Place temporary/debug artifacts in `.tmp/` (repository-local and git-ignored).
+- Quote any `gh` argument containing `?` or `&` (for example: `gh api 'repos/org/repo/pulls/1/comments?per_page=100'`).
+- When an agent posts PR comments or review replies, it should identify itself as acting on the maintainer's behalf.
+
 ## TODO
 
 - Evaluate adding a turn token or revision marker to action payloads to improve
