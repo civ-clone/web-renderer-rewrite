@@ -1,5 +1,7 @@
+type CommandStatus = 'success' | 'error';
+
 interface CommandOutcome {
-  status: string;
+  status: CommandStatus;
   message: string;
 }
 
