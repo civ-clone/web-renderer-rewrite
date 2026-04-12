@@ -96,6 +96,10 @@ class PostMessageAdapterHarness implements ITransport, ITransportListener {
   private readonly adapter: PostMessageTransportAdapter;
   public readonly sentRequests: TransportRequest[] = [];
   private readonly listeners: MessageHandler[] = [];
+  private readonly previousPostMessage = (globalThis as PostMessageGlobals)
+    .postMessage;
+  private readonly previousAddEventListener = (globalThis as PostMessageGlobals)
+    .addEventListener;
 
   constructor() {
     // Install stubs on globalThis so the adapter's send/receive work
@@ -138,8 +142,19 @@ class PostMessageAdapterHarness implements ITransport, ITransportListener {
   }
 
   teardown(): void {
-    delete (globalThis as PostMessageGlobals).postMessage;
-    delete (globalThis as PostMessageGlobals).addEventListener;
+    const globals = globalThis as PostMessageGlobals;
+
+    if (this.previousPostMessage) {
+      globals.postMessage = this.previousPostMessage;
+    } else {
+      delete globals.postMessage;
+    }
+
+    if (this.previousAddEventListener) {
+      globals.addEventListener = this.previousAddEventListener;
+    } else {
+      delete globals.addEventListener;
+    }
   }
 }
 

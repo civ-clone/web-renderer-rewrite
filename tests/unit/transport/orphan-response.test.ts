@@ -72,25 +72,27 @@ describe('Orphan response handling', () => {
 
   it('an orphan response after a request timed out does not throw', async () => {
     vi.useFakeTimers();
-    const transport = new InProcessTransport();
-    const player = new Player();
-    const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
-      timeoutMs: 50,
-    });
+    try {
+      const transport = new InProcessTransport();
+      const player = new Player();
+      const localPlayer = new LocalPlayer(player, leaderRegistry, transport, {
+        timeoutMs: 50,
+      });
 
-    const meta = new ChoiceMeta([TestCivilization], 'choose-civilization');
-    const promise = localPlayer.chooseFromList(meta);
-    const correlationId = transport.sentRequests[0].correlationId;
+      const meta = new ChoiceMeta([TestCivilization], 'choose-civilization');
+      const promise = localPlayer.chooseFromList(meta);
+      const correlationId = transport.sentRequests[0].correlationId;
 
-    vi.advanceTimersByTime(100);
-    await promise.catch(() => {});
+      vi.advanceTimersByTime(100);
+      await promise.catch(() => {});
 
-    // The pending entry has been cleared; this response is now orphaned
-    expect(() =>
-      transport.respond({ correlationId, payload: 0 })
-    ).not.toThrow();
-
-    vi.useRealTimers();
+      // The pending entry has been cleared; this response is now orphaned
+      expect(() =>
+        transport.respond({ correlationId, payload: 0 })
+      ).not.toThrow();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

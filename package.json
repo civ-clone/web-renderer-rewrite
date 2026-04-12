@@ -17,10 +17,10 @@
     "prettier:check": "prettier --config .prettierrc 'src/**/*.{ts,scss}'",
     "prettier:format": "prettier --config .prettierrc 'src/**/*.{ts,scss}' --write",
     "prebuild": "npm run ts:compile",
-    "test": "npx --yes vitest run",
-    "test:contract": "npx --yes vitest run tests/contract",
-    "test:integration": "npx --yes vitest run tests/integration",
-    "test:unit": "npx --yes vitest run tests/unit",
+    "test": "vitest run",
+    "test:contract": "vitest run tests/contract",
+    "test:integration": "vitest run tests/integration",
+    "test:unit": "vitest run tests/unit",
     "ts:compile": "tsc --build tsconfig.json",
     "watch": "node esbuild.js watch"
   },
@@ -37,7 +37,8 @@
     "esbuild-sass-plugin": "^2.4.0",
     "prettier": "^2.0.0",
     "sass": "^1.59.2",
-    "typescript": "^4.0.0"
+    "typescript": "^4.0.0",
+    "vitest": "^4.1.4"
   },
   "dependencies": {
     "@civ-clone/civ1-asset-extractor": "github:civ-clone/civ1-asset-extractor",
