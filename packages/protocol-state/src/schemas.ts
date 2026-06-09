@@ -79,6 +79,21 @@ export const unitActionDescriptorSchema = z.object({
   toTileId: z.string().min(1).optional(),
 });
 
+export const actionManifestEntrySchema = z.object({
+  tier: z.enum(["player", "unit"]),
+  actionType: z.string(),
+  mandatory: z.boolean(),
+  valueType: z.string().optional(),
+  requiresValueRef: z.boolean(),
+  requiresUnitRef: z.boolean(),
+  requiresFromTileRef: z.boolean(),
+  requiresToTileRef: z.boolean(),
+});
+
+export const actionManifestEnvelopeSchema = z.object({
+  entries: z.array(actionManifestEntrySchema),
+});
+
 export const actionRequirementStateSchema = z.object({
   mandatory: z.array(mandatoryRequirementSchema),
   optional: z.array(availableActionSchema),
@@ -98,6 +113,7 @@ export const snapshotEnvelopeSchema = z.object({
   requirementsByPlayer: z.record(actionRequirementStateSchema),
   actionsByPlayer: z.record(z.array(playerActionDescriptorSchema)).optional(),
   unitActionsById: z.record(z.array(unitActionDescriptorSchema)).optional(),
+  actionManifest: actionManifestEnvelopeSchema.optional(),
   rng: rngMetadataSchema.optional(),
   checksum: z.string(),
 });
@@ -183,6 +199,7 @@ export const turnEndResultSchema = z.object({
 
 export const engineMessageSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("snapshot"), payload: snapshotEnvelopeSchema }),
+  z.object({ type: z.literal("actionManifest"), payload: actionManifestEnvelopeSchema }),
   z.object({ type: z.literal("delta"), payload: deltaEnvelopeSchema }),
   z.object({ type: z.literal("actionResult"), payload: actionResultSchema }),
   z.object({ type: z.literal("turnEndResult"), payload: turnEndResultSchema }),
@@ -197,4 +214,5 @@ export const rendererMessageSchema = z.discriminatedUnion("type", [
     actorPlayerId: entityId,
   }),
 ]);
+
 

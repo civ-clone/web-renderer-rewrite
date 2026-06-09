@@ -10,6 +10,7 @@ It provides:
 - `describeUnitActions(unit)` -> `UnitActionDescriptor[]`
 - `ActionCommandHandler` / `ActionCommandHandlerContext`
 - `SnapshotExporter` / `SnapshotExporterContext`
+- `buildActionManifest(snapshot)`
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -43,8 +44,15 @@ During WP-002b rollout, descriptors and commands can carry both:
 - Builds `SnapshotEnvelope` from players/units/cities projections
 - Populates `entities`, `indexes`, `requirementsByPlayer`
 - Optionally includes `actionsByPlayer` and `unitActionsById`
+- Optionally includes `actionManifest` (enabled by default)
 - Optionally includes RNG metadata via `context.rng`
 - Computes SHA-256 envelope checksum
+
+## WP-008 action manifest
+
+- `buildActionManifest(snapshot)` extracts a deterministic, de-duplicated manifest from `actionsByPlayer` and `unitActionsById`
+- Manifest entries expose command-shape hints (`requiresValueRef`, `requiresUnitRef`, `requiresFromTileRef`, `requiresToTileRef`)
+- `SnapshotExporter` includes `actionManifest` unless `includeActionManifest: false` is set
 
 ## WP-005 delta export
 
@@ -105,3 +113,4 @@ pnpm test
 pnpm lint
 pnpm wp006:demo
 ```
+

@@ -14,6 +14,7 @@
 import { createHash } from "node:crypto";
 import {
   PROTOCOL_VERSION,
+  type ActionManifestEnvelope,
   type SnapshotEnvelope,
   type StateEntities,
   type StateIndexes,
@@ -25,6 +26,7 @@ import {
 } from "@civ-clone/protocol-state";
 import { describePlayerActions } from "./player-action-adapter.js";
 import { describeUnitActions } from "./unit-action-adapter.js";
+import { buildActionManifest } from "./action-manifest.js";
 
 // ---------------------------------------------------------------------------
 // Structural engine types (no import from core packages)
@@ -90,6 +92,7 @@ export interface SnapshotExporterContext {
    */
   includeActionsByPlayer?: boolean;
   includeUnitActionsById?: boolean;
+  includeActionManifest?: boolean;
   /** Optional RNG metadata to embed in snapshot for deterministic diagnostics */
   rng?: RngMetadata;
 }
@@ -226,6 +229,22 @@ export class SnapshotExporter {
       }
     }
 
+    let actionManifest: ActionManifestEnvelope | undefined;
+    if (context.includeActionManifest !== false) {
+      actionManifest = buildActionManifest({
+        protocolVersion: PROTOCOL_VERSION,
+        matchId: context.matchId,
+        stateVersion: context.stateVersion,
+        turn: context.turn,
+        entities,
+        indexes,
+        requirementsByPlayer,
+        ...(actionsByPlayer !== undefined && { actionsByPlayer }),
+        ...(unitActionsById !== undefined && { unitActionsById }),
+        checksum: "",
+      });
+    }
+
     const envelopeBody = {
       protocolVersion: PROTOCOL_VERSION,
       matchId: context.matchId,
@@ -236,6 +255,7 @@ export class SnapshotExporter {
       requirementsByPlayer,
       ...(actionsByPlayer !== undefined && { actionsByPlayer }),
       ...(unitActionsById !== undefined && { unitActionsById }),
+      ...(actionManifest !== undefined && { actionManifest }),
       ...(context.rng !== undefined && { rng: context.rng }),
     };
 
@@ -244,3 +264,4 @@ export class SnapshotExporter {
     return { ...envelopeBody, checksum };
   }
 }
+

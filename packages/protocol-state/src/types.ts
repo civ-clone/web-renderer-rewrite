@@ -140,6 +140,25 @@ export interface UnitActionDescriptor {
   toTileId?: string;  // "${x}:${y}" stable key; some actions are in-place
 }
 
+export interface ActionManifestEntry {
+  tier: "player" | "unit";
+  actionType: string;
+  mandatory: boolean;
+  valueType?: string;
+  /** True when renderer commands for this action need valueId/valueStableId. */
+  requiresValueRef: boolean;
+  /** True when renderer commands for this action need unitId/unitStableId. */
+  requiresUnitRef: boolean;
+  /** True when renderer commands for this action need fromTileId. */
+  requiresFromTileRef: boolean;
+  /** True when renderer commands for this action need toTileId. */
+  requiresToTileRef: boolean;
+}
+
+export interface ActionManifestEnvelope {
+  entries: ActionManifestEntry[];
+}
+
 export interface RngMetadata {
   /** Algorithm identifier, e.g. "xorshift64*" */
   algorithm: string;
@@ -169,6 +188,8 @@ export interface SnapshotEnvelope {
   actionsByPlayer?: Record<PlayerId, PlayerActionDescriptor[]>;
   /** Unit-level action descriptors per unit (populated for active units) */
   unitActionsById?: Record<EntityId, UnitActionDescriptor[]>;
+  /** Optional action contract metadata for tooling and validation */
+  actionManifest?: ActionManifestEnvelope;
   /** Optional deterministic RNG metadata for replay/multiplayer diagnostics */
   rng?: RngMetadata;
   /** SHA-256 hex of canonical JSON of this envelope for integrity checks */
@@ -295,6 +316,7 @@ export interface TurnEndResult {
 
 export type EngineMessage =
   | { type: "snapshot"; payload: SnapshotEnvelope }
+  | { type: "actionManifest"; payload: ActionManifestEnvelope }
   | { type: "delta"; payload: DeltaEnvelope }
   | { type: "actionResult"; payload: ActionResult }
   | { type: "turnEndResult"; payload: TurnEndResult };
@@ -303,3 +325,4 @@ export type RendererMessage =
   | { type: "action"; payload: ActionCommand }
   | { type: "turnEnd"; payload: TurnEndRequest }
   | { type: "requestSnapshot"; matchId: string; actorPlayerId: PlayerId };
+

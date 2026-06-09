@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   actionCommandSchema,
+  actionManifestEnvelopeSchema,
+  actionManifestEntrySchema,
   actionResultSchema,
   deltaEnvelopeSchema,
   snapshotEnvelopeSchema,
@@ -163,6 +165,36 @@ describe("snapshotEnvelopeSchema", () => {
             unitId: "Unit-1",
             unitStableId: "unit:42:3",
             fromTileId: "0:0",
+          },
+        ],
+      },
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts a snapshot with action manifest", () => {
+    const result = validate(snapshotEnvelopeSchema, {
+      ...baseSnapshot,
+      actionManifest: {
+        entries: [
+          {
+            tier: "player",
+            actionType: "ChooseResearch",
+            mandatory: true,
+            valueType: "PlayerResearch",
+            requiresValueRef: true,
+            requiresUnitRef: false,
+            requiresFromTileRef: false,
+            requiresToTileRef: false,
+          },
+          {
+            tier: "unit",
+            actionType: "Move",
+            mandatory: false,
+            requiresValueRef: false,
+            requiresUnitRef: true,
+            requiresFromTileRef: true,
+            requiresToTileRef: true,
           },
         ],
       },
@@ -405,6 +437,71 @@ describe("engineMessageSchema (transport discriminated union)", () => {
     });
     expect(result.ok).toBe(false);
   });
+
+  it("parses an actionManifest message", () => {
+    const result = validate(engineMessageSchema, {
+      type: "actionManifest",
+      payload: {
+        entries: [
+          {
+            tier: "player",
+            actionType: "ChooseResearch",
+            mandatory: true,
+            requiresValueRef: true,
+            requiresUnitRef: false,
+            requiresFromTileRef: false,
+            requiresToTileRef: false,
+          },
+        ],
+      },
+    });
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("actionManifest schemas", () => {
+  it("accepts a valid actionManifestEntry", () => {
+    const result = validate(actionManifestEntrySchema, {
+      tier: "unit",
+      actionType: "Move",
+      mandatory: false,
+      requiresValueRef: false,
+      requiresUnitRef: true,
+      requiresFromTileRef: true,
+      requiresToTileRef: true,
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects malformed actionManifestEntry", () => {
+    const result = validate(actionManifestEntrySchema, {
+      tier: "player",
+      actionType: "ChooseResearch",
+      mandatory: true,
+      requiresValueRef: "yes",
+      requiresUnitRef: false,
+      requiresFromTileRef: false,
+      requiresToTileRef: false,
+    });
+    expect(result.ok).toBe(false);
+  });
+
+  it("accepts a valid actionManifestEnvelope", () => {
+    const result = validate(actionManifestEnvelopeSchema, {
+      entries: [
+        {
+          tier: "player",
+          actionType: "EndTurn",
+          mandatory: true,
+          requiresValueRef: false,
+          requiresUnitRef: false,
+          requiresFromTileRef: false,
+          requiresToTileRef: false,
+        },
+      ],
+    });
+    expect(result.ok).toBe(true);
+  });
 });
 
 describe("playerActionDescriptorSchema", () => {
@@ -507,5 +604,6 @@ describe("unitActionDescriptorSchema", () => {
     expect(result.ok).toBe(false);
   });
 });
+
 
 

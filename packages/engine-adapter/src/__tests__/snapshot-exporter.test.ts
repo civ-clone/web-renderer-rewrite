@@ -227,5 +227,20 @@ describe("SnapshotExporter — action descriptors", () => {
 
     expect(snap.unitActionsById).toBeUndefined();
   });
+
+  it("includes actionManifest by default", () => {
+    const player = makePlayer("player:1");
+    const snap = new SnapshotExporter().buildSnapshot(makeContext({ getPlayers: () => [player] }));
+
+    expect(snap.actionManifest).toBeDefined();
+    expect(snap.actionManifest!.entries).toEqual([]);
+  });
+
+  it("omits actionManifest when includeActionManifest is false", () => {
+    const snap = new SnapshotExporter().buildSnapshot(makeContext({ includeActionManifest: false }));
+
+    expect(snap.actionManifest).toBeUndefined();
+  });
 });
+
 

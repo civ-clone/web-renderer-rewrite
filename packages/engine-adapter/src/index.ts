@@ -32,6 +32,8 @@ export {
   type SnapshotExporterContext,
 } from "./snapshot-exporter.js";
 
+export { buildActionManifest } from "./action-manifest.js";
+
 export { DeltaExporter } from "./delta-exporter.js";
 
 export {
@@ -45,3 +47,4 @@ export {
   resetRegistries,
   type ResettableRegistry,
 } from "./registry-lifecycle.js";
+
