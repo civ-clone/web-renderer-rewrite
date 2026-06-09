@@ -39,3 +39,9 @@ export {
   deriveDeterministicSeed,
   type SeededRng,
 } from "./deterministic-rng.js";
+
+export {
+  RegistryLifecycle,
+  resetRegistries,
+  type ResettableRegistry,
+} from "./registry-lifecycle.js";

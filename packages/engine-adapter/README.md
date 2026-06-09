@@ -1,6 +1,6 @@
 # @civ-clone/engine-adapter
 
-Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-006).
+Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-007).
 
 It provides:
 
@@ -12,6 +12,7 @@ It provides:
 - `SnapshotExporter` / `SnapshotExporterContext`
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
+- `RegistryLifecycle` / `resetRegistries`
 
 ## Why this exists
 
@@ -62,6 +63,12 @@ During WP-002b rollout, descriptors and commands can carry both:
 - `rng.nextInt(max)` yields bounded deterministic integer
 - `rng.counter()` exposes draw count for trace/debug
 
+## WP-007 registry lifecycle (boundary support)
+
+- `RegistryLifecycle` registers resettable singleton registries and resets them deterministically
+- `resetRegistries(...registries)` provides direct reset helper for test hooks
+- This package provides orchestration utilities; upstream registry classes still need native `reset()` methods where absent
+
 ## Minimal usage
 
 ```ts
@@ -71,6 +78,7 @@ import {
   DeltaExporter,
   deriveDeterministicSeed,
   createDeterministicRng,
+  RegistryLifecycle,
 } from "@civ-clone/engine-adapter";
 
 const actionHandler = new ActionCommandHandler();
@@ -79,6 +87,10 @@ const deltaExporter = new DeltaExporter();
 
 const seed = deriveDeterministicSeed("match:abc", 42, "player:1");
 const rng = createDeterministicRng(seed);
+
+const lifecycle = new RegistryLifecycle();
+lifecycle.register(/* registries with reset() */);
+lifecycle.resetAll();
 
 const snapshotA = snapshotExporter.buildSnapshot(contextA);
 const snapshotB = snapshotExporter.buildSnapshot(contextB);
