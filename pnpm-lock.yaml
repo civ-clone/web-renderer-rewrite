@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  semver: 7.7.3
-  detect-libc: 2.1.2
-  minipass: 5.0.0
-
 importers:
 
   .:
@@ -988,79 +983,79 @@ packages:
     resolution: {integrity: sha512-WY8jRe19QMifSizBSegok25VK2v6lYIXuPnsBpGCVxgLThKlNF90UQqLLrCVysBFSVDA2j0o1ihbN7cECgbpEA==}
 
   '@civ-clone/civ1-asset-extractor@https://codeload.github.com/civ-clone/civ1-asset-extractor/tar.gz/ee19340aed544d902d25710e6f77542ff22169e3':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-asset-extractor/tar.gz/ee19340aed544d902d25710e6f77542ff22169e3}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-asset-extractor/tar.gz/ee19340aed544d902d25710e6f77542ff22169e3}
     version: 0.1.1
 
   '@civ-clone/civ1-city-happiness@https://codeload.github.com/civ-clone/civ1-city-happiness/tar.gz/9e127786baa91190e5586414315a433afae3bad7':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-city-happiness/tar.gz/9e127786baa91190e5586414315a433afae3bad7}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-city-happiness/tar.gz/9e127786baa91190e5586414315a433afae3bad7}
     version: 0.1.0
 
   '@civ-clone/civ1-city-improvement@https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/cb87100b8c0da548456e24dce46d33103f528cc7':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/cb87100b8c0da548456e24dce46d33103f528cc7}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/cb87100b8c0da548456e24dce46d33103f528cc7}
     version: 0.1.0
 
   '@civ-clone/civ1-city@https://codeload.github.com/civ-clone/civ1-city/tar.gz/924c4450b1ce7b9cade60848e7e43f671a5ecb6e':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-city/tar.gz/924c4450b1ce7b9cade60848e7e43f671a5ecb6e}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-city/tar.gz/924c4450b1ce7b9cade60848e7e43f671a5ecb6e}
     version: 0.1.0
 
   '@civ-clone/civ1-civilization@https://codeload.github.com/civ-clone/civ1-civilization/tar.gz/4fbca668a1a5a31953659fa5c5999cd03466d273':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-civilization/tar.gz/4fbca668a1a5a31953659fa5c5999cd03466d273}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-civilization/tar.gz/4fbca668a1a5a31953659fa5c5999cd03466d273}
     version: 0.1.0
 
   '@civ-clone/civ1-default-spaceship-layout@https://codeload.github.com/civ-clone/civ1-default-spaceship-layout/tar.gz/40b18d0cca6fd1b9303cf3cbf1de326eac2df7d3':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-default-spaceship-layout/tar.gz/40b18d0cca6fd1b9303cf3cbf1de326eac2df7d3}
+    resolution: {gitHosted: true, integrity: sha512-z+MMsB6+jXoyH7GCAKXaVdOGVwTuOOdjJj7sW5O3xjF75eIxKxLD/+ngdp1bVg8Pjt2HfSW6HiVQwt4WXQQyrA==, tarball: https://codeload.github.com/civ-clone/civ1-default-spaceship-layout/tar.gz/40b18d0cca6fd1b9303cf3cbf1de326eac2df7d3}
     version: 0.1.0
 
   '@civ-clone/civ1-diplomacy@https://codeload.github.com/civ-clone/civ1-diplomacy/tar.gz/a6517d15a4a5395de4cc040119d738f9ec0c3a76':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-diplomacy/tar.gz/a6517d15a4a5395de4cc040119d738f9ec0c3a76}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-diplomacy/tar.gz/a6517d15a4a5395de4cc040119d738f9ec0c3a76}
     version: 0.1.0
 
   '@civ-clone/civ1-earth-generator@https://codeload.github.com/civ-clone/civ1-earth-generator/tar.gz/379291b146acbdb00442aaf2043dd4119a440444':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-earth-generator/tar.gz/379291b146acbdb00442aaf2043dd4119a440444}
+    resolution: {gitHosted: true, integrity: sha512-NGSaeUaU8VjRfs9nfojb+xRkJBwFIIIXTNbCM4g8NWJP5cjvg4e3oauq9yoNhwYE4zpkhA/k70MtrzuT3t9lpQ==, tarball: https://codeload.github.com/civ-clone/civ1-earth-generator/tar.gz/379291b146acbdb00442aaf2043dd4119a440444}
     version: 0.1.0
 
   '@civ-clone/civ1-game-year@https://codeload.github.com/civ-clone/civ1-game-year/tar.gz/4bafdbaec52d1596c9c80ea06bcb819535378c16':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-game-year/tar.gz/4bafdbaec52d1596c9c80ea06bcb819535378c16}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-game-year/tar.gz/4bafdbaec52d1596c9c80ea06bcb819535378c16}
     version: 0.1.0
 
   '@civ-clone/civ1-goody-hut@https://codeload.github.com/civ-clone/civ1-goody-hut/tar.gz/d3156d9b5335651f722104b0fbda0102310c060f':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-goody-hut/tar.gz/d3156d9b5335651f722104b0fbda0102310c060f}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-goody-hut/tar.gz/d3156d9b5335651f722104b0fbda0102310c060f}
     version: 0.1.1
 
   '@civ-clone/civ1-government@https://codeload.github.com/civ-clone/civ1-government/tar.gz/a246b410247a4446be89b603ca740d0c3ee5c3e9':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-government/tar.gz/a246b410247a4446be89b603ca740d0c3ee5c3e9}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-government/tar.gz/a246b410247a4446be89b603ca740d0c3ee5c3e9}
     version: 0.1.0
 
   '@civ-clone/civ1-player@https://codeload.github.com/civ-clone/civ1-player/tar.gz/109c732608ef5668c2666f8c31bd8ae2cccbe0a5':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-player/tar.gz/109c732608ef5668c2666f8c31bd8ae2cccbe0a5}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-player/tar.gz/109c732608ef5668c2666f8c31bd8ae2cccbe0a5}
     version: 0.1.0
 
   '@civ-clone/civ1-science@https://codeload.github.com/civ-clone/civ1-science/tar.gz/b646c331600783c5b9175057d0b1318196168861':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-science/tar.gz/b646c331600783c5b9175057d0b1318196168861}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-science/tar.gz/b646c331600783c5b9175057d0b1318196168861}
     version: 0.1.0
 
   '@civ-clone/civ1-spaceship@https://codeload.github.com/civ-clone/civ1-spaceship/tar.gz/870d23848ee1c2780c70947721178b83fc93a99b':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-spaceship/tar.gz/870d23848ee1c2780c70947721178b83fc93a99b}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-spaceship/tar.gz/870d23848ee1c2780c70947721178b83fc93a99b}
     version: 0.1.0
 
   '@civ-clone/civ1-trade-rate@https://codeload.github.com/civ-clone/civ1-trade-rate/tar.gz/24f5e144b4aa2e64e221330075e63f8cdcfce31f':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-trade-rate/tar.gz/24f5e144b4aa2e64e221330075e63f8cdcfce31f}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-trade-rate/tar.gz/24f5e144b4aa2e64e221330075e63f8cdcfce31f}
     version: 0.1.0
 
   '@civ-clone/civ1-treasury@https://codeload.github.com/civ-clone/civ1-treasury/tar.gz/b22094cf4aa6fa1efa05eec573f6997fd2000ecd':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-treasury/tar.gz/b22094cf4aa6fa1efa05eec573f6997fd2000ecd}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-treasury/tar.gz/b22094cf4aa6fa1efa05eec573f6997fd2000ecd}
     version: 0.1.0
 
   '@civ-clone/civ1-unit@https://codeload.github.com/civ-clone/civ1-unit/tar.gz/7decb73f0cde514ca9788bff09a468108081b0ae':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-unit/tar.gz/7decb73f0cde514ca9788bff09a468108081b0ae}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-unit/tar.gz/7decb73f0cde514ca9788bff09a468108081b0ae}
     version: 0.1.0
 
   '@civ-clone/civ1-wonder@https://codeload.github.com/civ-clone/civ1-wonder/tar.gz/dfe0bb79c665cdbb53c5a36c31c2f09c60b4ca46':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-wonder/tar.gz/dfe0bb79c665cdbb53c5a36c31c2f09c60b4ca46}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-wonder/tar.gz/dfe0bb79c665cdbb53c5a36c31c2f09c60b4ca46}
     version: 0.1.0
 
   '@civ-clone/civ1-world@https://codeload.github.com/civ-clone/civ1-world/tar.gz/cdf157b06c8f36da2cae2fdfa96e24274b995740':
-    resolution: {tarball: https://codeload.github.com/civ-clone/civ1-world/tar.gz/cdf157b06c8f36da2cae2fdfa96e24274b995740}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/civ1-world/tar.gz/cdf157b06c8f36da2cae2fdfa96e24274b995740}
     version: 0.1.0
 
   '@civ-clone/core-ai-client@0.1.3':
@@ -1193,15 +1188,15 @@ packages:
     resolution: {integrity: sha512-OSd1jsJiN+/MQtA56spokVxsTDt5bQN34utkK+ZZ6jUhKE06sYtyjXf5D8qP9BVxEwc8qv+J3weM3GCUvaQVbw==}
 
   '@civ-clone/simple-ai-client@https://codeload.github.com/civ-clone/simple-ai-client/tar.gz/e0966b992172b31558084ebceeb587be8cc80ff2':
-    resolution: {tarball: https://codeload.github.com/civ-clone/simple-ai-client/tar.gz/e0966b992172b31558084ebceeb587be8cc80ff2}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/simple-ai-client/tar.gz/e0966b992172b31558084ebceeb587be8cc80ff2}
     version: 0.1.2
 
   '@civ-clone/simple-world-generator@https://codeload.github.com/civ-clone/simple-world-generator/tar.gz/4f6079fe73a7aaa8da9e72c6234fdbd695c19dec':
-    resolution: {tarball: https://codeload.github.com/civ-clone/simple-world-generator/tar.gz/4f6079fe73a7aaa8da9e72c6234fdbd695c19dec}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/simple-world-generator/tar.gz/4f6079fe73a7aaa8da9e72c6234fdbd695c19dec}
     version: 0.1.2
 
   '@civ-clone/simple-world-path@https://codeload.github.com/civ-clone/simple-world-path/tar.gz/8878cb8e9c8cbbf91e3494b5c06eec1e31f44c3b':
-    resolution: {tarball: https://codeload.github.com/civ-clone/simple-world-path/tar.gz/8878cb8e9c8cbbf91e3494b5c06eec1e31f44c3b}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/civ-clone/simple-world-path/tar.gz/8878cb8e9c8cbbf91e3494b5c06eec1e31f44c3b}
     version: 0.1.0
 
   '@dom111/element@0.2.1':
@@ -1648,9 +1643,17 @@ packages:
   minimatch@3.1.5:
     resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
+  minipass@3.3.6:
+    resolution: {integrity: sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw==}
+    engines: {node: '>=8'}
+
   minipass@5.0.0:
     resolution: {integrity: sha512-3FnjYuehv9k6ovOEbyOswadCDPX1piCfhV8ncmYtHOjuPwylVWsghTLo7rabjC3Rx5xD4HDx8Wm1xnMF7S5qFQ==}
     engines: {node: '>=8'}
+
+  minipass@7.1.3:
+    resolution: {integrity: sha512-tEBHqDnIoM/1rXME1zgka9g6Q2lcoCkxHLuc7ODJ5BxbP5d4c2Z5cGgtXAku59200Cx7diuHTOYfSBD8n6mm8A==}
+    engines: {node: '>=16 || 14 >=14.17'}
 
   minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
@@ -1746,6 +1749,10 @@ packages:
   sass@1.99.0:
     resolution: {integrity: sha512-kgW13M54DUB7IsIRM5LvJkNlpH+WhMpooUcaWGFARkF1Tc82v9mIWkCbCYf+MBvpIUBSeSOTilpZjEPr2VYE6Q==}
     engines: {node: '>=14.0.0'}
+    hasBin: true
+
+  semver@6.3.1:
+    resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
   semver@7.7.3:
@@ -4298,7 +4305,7 @@ snapshots:
 
   fs-minipass@2.1.0:
     dependencies:
-      minipass: 5.0.0
+      minipass: 3.3.6
 
   fs.realpath@1.0.0: {}
 
@@ -4321,7 +4328,7 @@ snapshots:
       foreground-child: 3.3.1
       jackspeak: 4.2.3
       minimatch: 10.2.5
-      minipass: 5.0.0
+      minipass: 7.1.3
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.2
 
@@ -4390,7 +4397,7 @@ snapshots:
 
   make-dir@3.1.0:
     dependencies:
-      semver: 7.7.3
+      semver: 6.3.1
 
   marked@4.3.0: {}
 
@@ -4404,11 +4411,17 @@ snapshots:
     dependencies:
       brace-expansion: 1.1.14
 
+  minipass@3.3.6:
+    dependencies:
+      yallist: 4.0.0
+
   minipass@5.0.0: {}
+
+  minipass@7.1.3: {}
 
   minizlib@2.1.2:
     dependencies:
-      minipass: 5.0.0
+      minipass: 3.3.6
       yallist: 4.0.0
 
   mkdirp@1.0.4: {}
@@ -4452,7 +4465,7 @@ snapshots:
   path-scurry@2.0.2:
     dependencies:
       lru-cache: 11.3.3
-      minipass: 5.0.0
+      minipass: 7.1.3
 
   picomatch@4.0.4:
     optional: true
@@ -4486,6 +4499,8 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.6
+
+  semver@6.3.1: {}
 
   semver@7.7.3: {}
 

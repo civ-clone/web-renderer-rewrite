@@ -18,9 +18,6 @@
     "prettier:format": "prettier --config .prettierrc 'src/**/*.{ts,scss}' --write",
     "prebuild": "npm run ts:compile",
     "test": "npx --yes vitest run",
-    "test:contract": "npx --yes vitest run tests/contract",
-    "test:integration": "npx --yes vitest run tests/integration",
-    "test:unit": "npx --yes vitest run tests/unit",
     "ts:compile": "tsc --build tsconfig.json",
     "watch": "node esbuild.js watch"
   },
