@@ -71,6 +71,14 @@ interface StateEnvelope {
 - No direct object references, methods, closures, or cyclic object graphs.
 - Relationships are always `...Id` or `...Ids`.
 
+### 4.2.1 Dynamic AdditionalData tables
+
+- Upstream `@civ-clone/**/registerAdditionalData.ts` providers may realize extra keys during `DataObject.toPlainObject`.
+- Those keys can be projected into dynamic `entities` tables and optional `indexes` entries.
+- Contract rule: table/index names are stable identifiers, not UI labels.
+- Determinism rule: same engine state + same provider outputs must produce identical snapshot checksums.
+- Renderer rule: do not assume fixed tables beyond required protocol minimums; discover and consume tables/indexes generically.
+
 ### 4.3 Action Requirements
 
 ```ts

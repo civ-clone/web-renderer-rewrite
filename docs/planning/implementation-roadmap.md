@@ -109,6 +109,12 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - Dependency: multiplayer server implementation
 - **Priority:** Medium — initial `RegistryContainer` boundary utility landed in `@civ-clone/engine-adapter`
 
+**WP-013: AdditionalData rendering bridge (modpack flexibility)**
+- Map upstream `registerAdditionalData` / `DataObject.toPlainObject` outputs to dynamic `entities` and `indexes` tables
+- Keep renderer entity-agnostic by consuming schema-valid dynamic tables rather than fixed game nouns
+- Dependency: none (can proceed in parallel with WP-012)
+- **Priority:** High — reduces renderer coupling to units/cities assumptions
+
 ## Quick prioritization summary
 
 > WP numbers align with `docs/planning/renderer-engine-work-packages-v1.md` (canonical).
@@ -129,6 +135,7 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
 | WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | ✅ DONE |
 | WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | 🚧 IN PROGRESS |
+| WP-013 | AdditionalData bridge | 5 | 1–2d | None | Parallel with WP-012 | 🔜 NEXT |
 
 ## Critical path (minimum for MVP)
 

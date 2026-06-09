@@ -49,6 +49,7 @@ During WP-002b rollout, descriptors and commands can carry both:
 
 - Builds `SnapshotEnvelope` from players/units/cities projections
 - Populates `entities`, `indexes`, `requirementsByPlayer`
+- Supports additional dynamic table/index providers via `getAdditionalEntityTables()` and `getAdditionalIndexes()`
 - Optionally includes `actionsByPlayer` and `unitActionsById`
 - Optionally includes `actionManifest` (enabled by default)
 - Optionally includes RNG metadata via `context.rng`

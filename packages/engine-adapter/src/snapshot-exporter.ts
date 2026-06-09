@@ -98,6 +98,16 @@ export interface SnapshotExporterContext {
   toPlayerRecord?: (player: EnginePlayer) => EntityState;
   toUnitRecord?: (unit: EngineUnit) => EntityState;
   toCityRecord?: (city: EngineCity) => EntityState;
+  /**
+   * Optional additional table projections for modpack/domain-specific entities.
+   * Table names should be stable identifiers (e.g. "worlds", "terraformZones").
+   */
+  getAdditionalEntityTables?: () => StateEntities;
+  /**
+   * Optional additional index projections for modpack/domain-specific lookups.
+   * Index names should be stable identifiers (e.g. "tilesByBiome").
+   */
+  getAdditionalIndexes?: () => StateIndexes;
 
   /**
    * Set to `false` to skip including action descriptors in the envelope.
@@ -136,6 +146,22 @@ function canonicalJson(value: unknown): string {
 
 function sha256hex(input: string): string {
   return createHash("sha256").update(input, "utf8").digest("hex");
+}
+
+function mergeNestedStringMaps(
+  base: Record<string, Record<string, unknown>>,
+  additional: Record<string, Record<string, unknown>>
+): void {
+  for (const [tableName, tableValues] of Object.entries(additional)) {
+    if (!base[tableName]) {
+      base[tableName] = {};
+    }
+
+    base[tableName] = {
+      ...base[tableName],
+      ...tableValues,
+    };
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -241,6 +267,18 @@ export class SnapshotExporter {
       }
       indexes["citiesByPlayer"][playerId].push(id);
     }
+
+    // ---- additional entities/indexes from configurable providers ----
+    const additionalEntities = context.getAdditionalEntityTables?.() ?? {};
+    const additionalIndexes = context.getAdditionalIndexes?.() ?? {};
+    mergeNestedStringMaps(
+      entities as Record<string, Record<string, unknown>>,
+      additionalEntities as Record<string, Record<string, unknown>>
+    );
+    mergeNestedStringMaps(
+      indexes as Record<string, Record<string, unknown>>,
+      additionalIndexes as Record<string, Record<string, unknown>>
+    );
 
     // ---- requirementsByPlayer ----
     const requirementsByPlayer: Record<string, ActionRequirementState> = {};

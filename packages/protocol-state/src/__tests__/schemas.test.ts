@@ -202,6 +202,28 @@ describe("snapshotEnvelopeSchema", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts a snapshot with AdditionalData-style dynamic tables", () => {
+    const result = validate(snapshotEnvelopeSchema, {
+      ...baseSnapshot,
+      entities: {
+        ...baseSnapshot.entities,
+        worlds: {
+          "world:player:1": {
+            discoveredTileIds: ["tile:0-0", "tile:1-0"],
+            fogTileIds: ["tile:2-2"],
+          },
+        },
+      },
+      indexes: {
+        ...baseSnapshot.indexes,
+        worldsByPlayer: {
+          "player:1": ["world:player:1"],
+        },
+      },
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects wrong protocol version", () => {
     const result = validate(snapshotEnvelopeSchema, {
       ...baseSnapshot,

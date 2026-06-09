@@ -90,6 +90,48 @@ describe("SnapshotExporter — envelope structure", () => {
       exporter.buildSnapshot(makeContext({ turn: 2 })).checksum
     );
   });
+
+  it("includes additional entity tables and indexes from provider hooks", () => {
+    const snap = new SnapshotExporter().buildSnapshot(
+      makeContext({
+        getAdditionalEntityTables: () => ({
+          worlds: {
+            "world:player:1": { discoveredTileIds: ["0:0", "1:0"] },
+          },
+        }),
+        getAdditionalIndexes: () => ({
+          worldsByPlayer: {
+            "player:1": ["world:player:1"],
+          },
+        }),
+      })
+    );
+
+    expect(snap.entities["worlds"]["world:player:1"]).toEqual({
+      discoveredTileIds: ["0:0", "1:0"],
+    });
+    expect(snap.indexes["worldsByPlayer"]["player:1"]).toEqual(["world:player:1"]);
+  });
+
+  it("produces stable checksum when additional providers return identical data", () => {
+    const exporter = new SnapshotExporter();
+    const context = makeContext({
+      getAdditionalEntityTables: () => ({
+        worlds: {
+          "world:player:1": { discoveredTileIds: ["0:0"] },
+        },
+      }),
+      getAdditionalIndexes: () => ({
+        worldsByPlayer: {
+          "player:1": ["world:player:1"],
+        },
+      }),
+    });
+
+    expect(exporter.buildSnapshot(context).checksum).toBe(
+      exporter.buildSnapshot(context).checksum
+    );
+  });
 });
 
 describe("SnapshotExporter — entities table", () => {
