@@ -237,11 +237,13 @@ export class ActionCommandHandler {
           command,
           legacyUnitActions as never[]
         );
+        const parityMatched = legacyUnitActions.length === shadowActions.length;
         emit("migration.shadow.units", {
           commandId: command.commandId,
           legacyActionCount: legacyUnitActions.length,
           migratedActionCount: shadowActions.length,
-          parityMatched: legacyUnitActions.length === shadowActions.length,
+          parityMatched,
+          mismatchType: parityMatched ? undefined : "actions",
         });
       }
 

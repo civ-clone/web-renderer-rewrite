@@ -33,7 +33,10 @@ import {
   shouldUseMigratedPath,
   type MigrationCutoverConfig,
 } from "./migration-cutover.js";
-import type { UnitsMigrationAdapter } from "./migration-types.js";
+import type {
+  CitiesMigrationAdapter,
+  UnitsMigrationAdapter,
+} from "./migration-types.js";
 import { describePlayerActions } from "./player-action-adapter.js";
 import { describeUnitActions } from "./unit-action-adapter.js";
 import { buildActionManifest } from "./action-manifest.js";
@@ -106,6 +109,7 @@ export interface SnapshotExporterContext {
   observability?: ObservabilitySink;
   cutover?: MigrationCutoverConfig;
   unitsAdapter?: UnitsMigrationAdapter;
+  citiesAdapter?: CitiesMigrationAdapter;
   /** Optional RNG metadata to embed in snapshot for deterministic diagnostics */
   rng?: RngMetadata;
 }
@@ -176,13 +180,17 @@ export class SnapshotExporter {
       entities["units"][id] = useMigratedUnits ? migratedRecord : legacyRecord;
 
       if (shouldShadowCompare(context.cutover, "units") && context.unitsAdapter) {
+        const parityMatched =
+          canonicalJson(legacyRecord) === canonicalJson(migratedRecord);
         context.observability?.record(
           createObservabilityEvent(
             "migration.shadow.units",
             {
               entityId: id,
-              parityMatched:
-                canonicalJson(legacyRecord) === canonicalJson(migratedRecord),
+              parityMatched,
+              mismatchType: parityMatched ? undefined : "record",
+              legacyRecord,
+              migratedRecord,
             },
             context.matchId
           )
@@ -199,12 +207,33 @@ export class SnapshotExporter {
     // ---- cities + citiesByPlayer index ----
     entities["cities"] = {};
     indexes["citiesByPlayer"] = {};
+    const useMigratedCities =
+      shouldUseMigratedPath(context.cutover, "cities") && !!context.citiesAdapter;
 
     for (const city of cities) {
       const id = entityId(city);
-      entities["cities"][id] = context.toCityRecord
-        ? context.toCityRecord(city)
-        : {};
+      const legacyRecord = context.toCityRecord ? context.toCityRecord(city) : {};
+      const migratedRecord =
+        context.citiesAdapter?.toCityRecord(city as never) ?? legacyRecord;
+      entities["cities"][id] = useMigratedCities ? migratedRecord : legacyRecord;
+
+      if (shouldShadowCompare(context.cutover, "cities") && context.citiesAdapter) {
+        const parityMatched =
+          canonicalJson(legacyRecord) === canonicalJson(migratedRecord);
+        context.observability?.record(
+          createObservabilityEvent(
+            "migration.shadow.cities",
+            {
+              entityId: id,
+              parityMatched,
+              mismatchType: parityMatched ? undefined : "record",
+              legacyRecord,
+              migratedRecord,
+            },
+            context.matchId
+          )
+        );
+      }
 
       const playerId = entityId(city.player());
       if (!indexes["citiesByPlayer"][playerId]) {
@@ -262,6 +291,7 @@ export class SnapshotExporter {
         unitActionsById[id] = useMigratedUnits ? migratedActions : legacyActions;
 
         if (shouldShadowCompare(context.cutover, "units") && context.unitsAdapter) {
+          const parityMatched = legacyActions.length === migratedActions.length;
           context.observability?.record(
             createObservabilityEvent(
               "migration.shadow.units",
@@ -269,7 +299,8 @@ export class SnapshotExporter {
                 entityId: id,
                 legacyActionCount: legacyActions.length,
                 migratedActionCount: migratedActions.length,
-                parityMatched: legacyActions.length === migratedActions.length,
+                parityMatched,
+                mismatchType: parityMatched ? undefined : "actions",
               },
               context.matchId
             )

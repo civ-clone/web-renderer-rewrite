@@ -30,6 +30,12 @@ export type MigrationUnit = {
   actionsForNeighbours(from: MigrationTile): Record<string, MigrationUnitAction[]>;
 };
 
+export type MigrationCity = {
+  id(): string;
+  getStableId?: () => string;
+  player(): MigrationPlayer;
+};
+
 export interface UnitsMigrationAdapter {
   toUnitRecord(unit: MigrationUnit): EntityState;
   describeUnitActions(unit: MigrationUnit): UnitActionDescriptor[];
@@ -38,4 +44,9 @@ export interface UnitsMigrationAdapter {
     legacyActions: MigrationUnitAction[]
   ): MigrationUnitAction[];
 }
+
+export interface CitiesMigrationAdapter {
+  toCityRecord(city: MigrationCity): EntityState;
+}
+
 

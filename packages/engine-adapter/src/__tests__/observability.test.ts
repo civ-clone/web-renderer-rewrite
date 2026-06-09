@@ -18,6 +18,33 @@ function makeSnapshot(overrides: Partial<SnapshotEnvelope> = {}): SnapshotEnvelo
   };
 }
 
+function makePlayer() {
+  return {
+    id: () => "Player-1",
+    getStableId: () => "player:1",
+    actions: () => [] as never[],
+  };
+}
+
+function makeUnit(player: ReturnType<typeof makePlayer>) {
+  return {
+    id: () => "Unit-1",
+    getStableId: () => "unit:42:3",
+    player: () => player,
+    tile: () => ({ x: () => 3, y: () => 4 }),
+    actions: () => [] as never[],
+    actionsForNeighbours: () => ({} as Record<string, never[]>),
+  };
+}
+
+function makeCity(player: ReturnType<typeof makePlayer>) {
+  return {
+    id: () => "City-1",
+    getStableId: () => "city:alpha",
+    player: () => player,
+  };
+}
+
 describe("observability integration", () => {
   it("SnapshotExporter emits snapshot.exported", () => {
     const sink = new InMemoryObservabilitySink();
@@ -43,6 +70,46 @@ describe("observability integration", () => {
     new DeltaExporter().buildDelta(previous, next, sink);
 
     expect(sink.events().map((event) => event.type)).toContain("delta.exported");
+  });
+
+  it("SnapshotExporter emits migration shadow events for units and cities", () => {
+    const sink = new InMemoryObservabilitySink();
+    const player = makePlayer();
+    const unit = makeUnit(player);
+    const city = makeCity(player);
+
+    new SnapshotExporter().buildSnapshot({
+      matchId: "match:obs",
+      stateVersion: 2,
+      turn: 2,
+      getPlayers: () => [player],
+      getUnits: () => [unit],
+      getCities: () => [city],
+      observability: sink,
+      cutover: { units: "shadow", cities: "shadow" },
+      toUnitRecord: () => ({ hp: 10 }),
+      unitsAdapter: {
+        toUnitRecord: () => ({ hp: 20 }),
+        describeUnitActions: () => [],
+        resolveUnitActions: (_command, actions) => actions,
+      },
+      toCityRecord: () => ({ pop: 3 }),
+      citiesAdapter: {
+        toCityRecord: () => ({ pop: 4 }),
+      },
+    });
+
+    const types = sink.events().map((event) => event.type);
+    expect(types).toContain("migration.shadow.units");
+    expect(types).toContain("migration.shadow.cities");
+
+    const cityShadow = sink
+      .events()
+      .find((event) => event.type === "migration.shadow.cities");
+    expect(cityShadow?.payload).toMatchObject({
+      parityMatched: false,
+      mismatchType: "record",
+    });
   });
 });
 

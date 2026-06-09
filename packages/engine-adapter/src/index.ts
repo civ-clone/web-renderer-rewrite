@@ -76,12 +76,18 @@ export {
   DefaultUnitsMigrationAdapter,
 } from "./units-migration-adapter.js";
 
+export {
+  DefaultCitiesMigrationAdapter,
+} from "./cities-migration-adapter.js";
+
 export type {
   MigrationTile,
   MigrationPlayer,
   MigrationUnit,
   MigrationUnitAction,
   UnitsMigrationAdapter,
+  MigrationCity,
+  CitiesMigrationAdapter,
 } from "./migration-types.js";
 
 export { DeltaExporter } from "./delta-exporter.js";

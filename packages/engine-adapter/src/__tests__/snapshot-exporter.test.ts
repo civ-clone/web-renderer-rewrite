@@ -167,6 +167,23 @@ describe("SnapshotExporter — entities table", () => {
 
     expect(Object.keys(snap.entities["cities"])).toContain("City-1");
   });
+
+  it("uses citiesAdapter serializer when cities cutover mode is migrated", () => {
+    const player = makePlayer("Player-1");
+    const city = makeCity("City-1", player, "city:alpha");
+    const snap = new SnapshotExporter().buildSnapshot(
+      makeContext({
+        getPlayers: () => [player],
+        getCities: () => [city],
+        cutover: { cities: "migrated" },
+        citiesAdapter: {
+          toCityRecord: () => ({ migratedCity: true }),
+        },
+      })
+    );
+
+    expect(snap.entities["cities"]["city:alpha"]).toEqual({ migratedCity: true });
+  });
 });
 
 describe("SnapshotExporter — indexes", () => {

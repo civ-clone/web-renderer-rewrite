@@ -138,7 +138,7 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Targeted shadow checks compare critical behaviors.
 
 Current progress:
-- Units subsystem migration adapter + cutover routing hooks landed in `@civ-clone/engine-adapter`.
+- Units and cities subsystem migration adapters + cutover routing/shadow hooks landed in `@civ-clone/engine-adapter`.
 
 ## Suggested Sequencing
 

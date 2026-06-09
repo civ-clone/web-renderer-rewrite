@@ -269,5 +269,52 @@ describe("ActionCommandHandler", () => {
     expect(resolverCalls).toBe(1);
     expect(calls.unit).toBe(1);
   });
+
+  it("emits units shadow mismatch telemetry when cutover mode is shadow", () => {
+    const handler = new ActionCommandHandler();
+    const unitAction = {
+      constructor: { name: "Move" },
+      unit: () => ({ id: () => "Unit-1", getStableId: () => "unit:42:3" }),
+      from: () => ({ x: () => 3, y: () => 4 }),
+      to: () => ({ x: () => 3, y: () => 5 }),
+    };
+    const sink = new InMemoryObservabilitySink();
+    const { context } = makeContext({
+      getUnitActions: () => [unitAction as never],
+      cutover: { units: "shadow" },
+      observability: sink,
+      unitsAdapter: {
+        toUnitRecord: () => ({}),
+        describeUnitActions: () => [],
+        // Return extra action to force mismatch telemetry.
+        resolveUnitActions: (_command, legacyActions) => [
+          ...legacyActions,
+          legacyActions[0],
+        ],
+      },
+    });
+
+    handler.onActionCommand(
+      makeCommand({
+        commandId: "cmd-11",
+        clientSeq: 11,
+        tier: "unit",
+        actionType: "Move",
+        unitStableId: "unit:42:3",
+        fromTileId: "3:4",
+        toTileId: "3:5",
+      }),
+      context
+    );
+
+    const shadowEvent = sink.events().find((event) => event.type === "migration.shadow.units");
+    expect(shadowEvent).toBeDefined();
+    expect(shadowEvent!.payload).toMatchObject({
+      parityMatched: false,
+      mismatchType: "actions",
+      legacyActionCount: 1,
+      migratedActionCount: 2,
+    });
+  });
 });
 

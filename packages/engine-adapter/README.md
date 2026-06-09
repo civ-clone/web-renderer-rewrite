@@ -14,7 +14,7 @@ It provides:
 - `ValidationBoundary` / `BOUNDARY_ERROR_CODES` / `BoundaryValidationResult`
 - `InMemoryObservabilitySink` / `NoopObservabilitySink`
 - `ReplayHarness` / `buildReproPacket(...)`
-- `DefaultUnitsMigrationAdapter` + cutover helpers (`cutoverMode`, `shouldUseMigratedPath`, `shouldShadowCompare`)
+- `DefaultUnitsMigrationAdapter` / `DefaultCitiesMigrationAdapter` + cutover helpers (`cutoverMode`, `shouldUseMigratedPath`, `shouldShadowCompare`)
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -146,8 +146,9 @@ if (msg.data.type === "action") {
 ## WP-011 migration adapters and cutover
 
 - `MigrationCutoverConfig` controls subsystem rollout mode: `legacy`, `migrated`, `shadow`
-- `DefaultUnitsMigrationAdapter` provides the first concrete migrated subsystem (`units`)
-- `SnapshotExporter` and `ActionCommandHandler` accept optional `cutover` + `unitsAdapter` hooks
+- `DefaultUnitsMigrationAdapter` and `DefaultCitiesMigrationAdapter` provide concrete migrated subsystem serializers
+- `SnapshotExporter` accepts optional `cutover`, `unitsAdapter`, and `citiesAdapter` hooks
+- `ActionCommandHandler` accepts optional `cutover` + `unitsAdapter` hooks for unit command resolution routing
 - `shadow` mode keeps legacy behavior active while emitting parity telemetry for migration checks
 
 ## Development

@@ -97,11 +97,11 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - Added deterministic `ReplayHarness` for command stream replay + checksum verification
 - Added `buildReproPacket(...)` for minimal repro artifact exports
 
-**WP-011: Migration adapters and cutover (architectural WP-011)**
+**WP-011: Migration adapters and cutover (architectural WP-011) 🚧 IN PROGRESS**
 - Implement legacy-to-envelope adapters and subsystem-by-subsystem rollout
 - Add targeted shadow checks for parity during migration
 - **Priority:** High — primary remaining delivery lane
-- **Status:** IN PROGRESS — units subsystem adapter + cutover hooks implemented in engine-adapter
+- **Status:** IN PROGRESS — units and cities subsystem adapters + cutover/shadow hooks implemented in `@civ-clone/engine-adapter`
 
 **WP-012: Per-match registry container (Finding 6 Phase 2)**
 - Implement RegistryContainer for multiplayer server scenarios

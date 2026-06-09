@@ -2,6 +2,7 @@ import {
   SnapshotExporter,
   ActionCommandHandler,
   DefaultUnitsMigrationAdapter,
+  DefaultCitiesMigrationAdapter,
 } from "../index.js";
 
 function makePlayer() {
@@ -31,9 +32,19 @@ function makeUnit(player: ReturnType<typeof makePlayer>) {
   };
 }
 
+function makeCity(player: ReturnType<typeof makePlayer>) {
+  return {
+    id: () => "City-1",
+    getStableId: () => "city:alpha",
+    player: () => player,
+  };
+}
+
 const player = makePlayer();
 const unit = makeUnit(player);
+const city = makeCity(player);
 const unitsAdapter = new DefaultUnitsMigrationAdapter();
+const citiesAdapter = new DefaultCitiesMigrationAdapter();
 
 const snapshot = new SnapshotExporter().buildSnapshot({
   matchId: "match:wp011-demo",
@@ -41,13 +52,15 @@ const snapshot = new SnapshotExporter().buildSnapshot({
   turn: 1,
   getPlayers: () => [player],
   getUnits: () => [unit],
-  getCities: () => [],
-  cutover: { units: "migrated" },
+  getCities: () => [city],
+  cutover: { units: "migrated", cities: "migrated" },
   unitsAdapter,
+  citiesAdapter,
 });
 
 console.log("WP-011 migration cutover demo");
 console.log("unit entity record:", snapshot.entities["units"]["unit:42:3"]);
+console.log("city entity record:", snapshot.entities["cities"]["city:alpha"]);
 
 const handler = new ActionCommandHandler();
 const result = handler.onActionCommand(
@@ -76,5 +89,6 @@ const result = handler.onActionCommand(
 );
 
 console.log("command status:", result.status);
+
 
 
