@@ -8,6 +8,12 @@ import {
   createObservabilityEvent,
   type ObservabilitySink,
 } from "./observability.js";
+import {
+  shouldShadowCompare,
+  shouldUseMigratedPath,
+  type MigrationCutoverConfig,
+} from "./migration-cutover.js";
+import type { UnitsMigrationAdapter } from "./migration-types.js";
 
 type EngineValueRef = {
   id?: () => string;
@@ -40,6 +46,8 @@ export interface ActionCommandHandlerContext {
   matchId: string;
   currentTurn?: number;
   observability?: ObservabilitySink;
+  cutover?: MigrationCutoverConfig;
+  unitsAdapter?: UnitsMigrationAdapter;
   getPlayerActions(command: ActionCommand): EnginePlayerAction[];
   getUnitActions(command: ActionCommand): EngineUnitAction[];
   executePlayerAction(action: EnginePlayerAction, command: ActionCommand): void;
@@ -214,8 +222,30 @@ export class ActionCommandHandler {
 
       resolved = matches[0];
     } else {
-      const matches = context
-        .getUnitActions(command)
+      const legacyUnitActions = context.getUnitActions(command);
+      const useMigratedUnits =
+        shouldUseMigratedPath(context.cutover, "units") && !!context.unitsAdapter;
+      const candidateUnitActions = useMigratedUnits
+        ? context.unitsAdapter!.resolveUnitActions(command, legacyUnitActions as never[])
+        : legacyUnitActions;
+
+      if (
+        shouldShadowCompare(context.cutover, "units") &&
+        context.unitsAdapter
+      ) {
+        const shadowActions = context.unitsAdapter.resolveUnitActions(
+          command,
+          legacyUnitActions as never[]
+        );
+        emit("migration.shadow.units", {
+          commandId: command.commandId,
+          legacyActionCount: legacyUnitActions.length,
+          migratedActionCount: shadowActions.length,
+          parityMatched: legacyUnitActions.length === shadowActions.length,
+        });
+      }
+
+      const matches = candidateUnitActions
         .filter((action) => unitActionMatches(command, action));
 
       if (matches.length > 1) {

@@ -63,6 +63,27 @@ export {
   type ReplayFailurePacket,
 } from "./repro-packet.js";
 
+export {
+  cutoverMode,
+  shouldUseMigratedPath,
+  shouldShadowCompare,
+  type SubsystemName,
+  type CutoverMode,
+  type MigrationCutoverConfig,
+} from "./migration-cutover.js";
+
+export {
+  DefaultUnitsMigrationAdapter,
+} from "./units-migration-adapter.js";
+
+export type {
+  MigrationTile,
+  MigrationPlayer,
+  MigrationUnit,
+  MigrationUnitAction,
+  UnitsMigrationAdapter,
+} from "./migration-types.js";
+
 export { DeltaExporter } from "./delta-exporter.js";
 
 export {

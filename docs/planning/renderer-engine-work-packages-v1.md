@@ -126,7 +126,7 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Logs include enough data to debug desync root causes.
 - Tooling can export a minimal repro packet for failures.
 
-## WP-011: Migration Adapters and Cutover
+## WP-011: Migration Adapters and Cutover 🚧 IN PROGRESS
 
 **Scope**
 - Implement adapters from legacy object graph APIs to new envelopes.
@@ -136,6 +136,9 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - At least one subsystem is fully migrated end-to-end.
 - Legacy path remains functional for unmigrated subsystems.
 - Targeted shadow checks compare critical behaviors.
+
+Current progress:
+- Units subsystem migration adapter + cutover routing hooks landed in `@civ-clone/engine-adapter`.
 
 ## Suggested Sequencing
 

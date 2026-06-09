@@ -101,6 +101,7 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - Implement legacy-to-envelope adapters and subsystem-by-subsystem rollout
 - Add targeted shadow checks for parity during migration
 - **Priority:** High — primary remaining delivery lane
+- **Status:** IN PROGRESS — units subsystem adapter + cutover hooks implemented in engine-adapter
 
 **WP-012: Per-match registry container (Finding 6 Phase 2)**
 - Implement RegistryContainer for multiplayer server scenarios
@@ -126,7 +127,7 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP | ✅ DONE |
 | WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | ✅ DONE |
 | WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
-| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | 🔜 NEXT |
+| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | 🚧 IN PROGRESS |
 | WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | ⏳ |
 
 ## Critical path (minimum for MVP)

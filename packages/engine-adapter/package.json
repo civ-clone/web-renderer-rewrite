@@ -18,7 +18,8 @@
     "lint": "tsc --noEmit",
     "wp006:demo": "pnpm build && node dist/examples/wp006-deterministic-rng-runner.js",
     "wp009:bench": "pnpm build && node dist/examples/wp009-validation-boundary-bench.js",
-    "wp010:demo": "pnpm build && node dist/examples/wp010-replay-harness-runner.js"
+    "wp010:demo": "pnpm build && node dist/examples/wp010-replay-harness-runner.js",
+    "wp011:demo": "pnpm build && node dist/examples/wp011-migration-cutover-runner.js"
   },
   "dependencies": {
     "@civ-clone/protocol-state": "workspace:*"

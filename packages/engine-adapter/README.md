@@ -14,6 +14,7 @@ It provides:
 - `ValidationBoundary` / `BOUNDARY_ERROR_CODES` / `BoundaryValidationResult`
 - `InMemoryObservabilitySink` / `NoopObservabilitySink`
 - `ReplayHarness` / `buildReproPacket(...)`
+- `DefaultUnitsMigrationAdapter` + cutover helpers (`cutoverMode`, `shouldUseMigratedPath`, `shouldShadowCompare`)
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -142,6 +143,13 @@ if (msg.data.type === "action") {
 - `ReplayHarness#run(stream, context, options)` replays deterministic command streams and verifies final checksum expectations
 - `buildReproPacket(...)` exports a minimal repro artifact: summary + command stream + recent observability events
 
+## WP-011 migration adapters and cutover
+
+- `MigrationCutoverConfig` controls subsystem rollout mode: `legacy`, `migrated`, `shadow`
+- `DefaultUnitsMigrationAdapter` provides the first concrete migrated subsystem (`units`)
+- `SnapshotExporter` and `ActionCommandHandler` accept optional `cutover` + `unitsAdapter` hooks
+- `shadow` mode keeps legacy behavior active while emitting parity telemetry for migration checks
+
 ## Development
 
 ```bash
@@ -151,6 +159,7 @@ pnpm lint
 pnpm wp006:demo
 pnpm wp009:bench
 pnpm wp010:demo
+pnpm wp011:demo
 ```
 
 

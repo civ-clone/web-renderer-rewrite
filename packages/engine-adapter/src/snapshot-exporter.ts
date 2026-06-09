@@ -28,6 +28,12 @@ import {
   createObservabilityEvent,
   type ObservabilitySink,
 } from "./observability.js";
+import {
+  shouldShadowCompare,
+  shouldUseMigratedPath,
+  type MigrationCutoverConfig,
+} from "./migration-cutover.js";
+import type { UnitsMigrationAdapter } from "./migration-types.js";
 import { describePlayerActions } from "./player-action-adapter.js";
 import { describeUnitActions } from "./unit-action-adapter.js";
 import { buildActionManifest } from "./action-manifest.js";
@@ -98,6 +104,8 @@ export interface SnapshotExporterContext {
   includeUnitActionsById?: boolean;
   includeActionManifest?: boolean;
   observability?: ObservabilitySink;
+  cutover?: MigrationCutoverConfig;
+  unitsAdapter?: UnitsMigrationAdapter;
   /** Optional RNG metadata to embed in snapshot for deterministic diagnostics */
   rng?: RngMetadata;
 }
@@ -157,12 +165,29 @@ export class SnapshotExporter {
     // ---- units + unitsByPlayer index ----
     entities["units"] = {};
     indexes["unitsByPlayer"] = {};
+    const useMigratedUnits =
+      shouldUseMigratedPath(context.cutover, "units") && !!context.unitsAdapter;
 
     for (const unit of units) {
       const id = entityId(unit);
-      entities["units"][id] = context.toUnitRecord
-        ? context.toUnitRecord(unit)
-        : {};
+      const legacyRecord = context.toUnitRecord ? context.toUnitRecord(unit) : {};
+      const migratedRecord =
+        context.unitsAdapter?.toUnitRecord(unit as never) ?? legacyRecord;
+      entities["units"][id] = useMigratedUnits ? migratedRecord : legacyRecord;
+
+      if (shouldShadowCompare(context.cutover, "units") && context.unitsAdapter) {
+        context.observability?.record(
+          createObservabilityEvent(
+            "migration.shadow.units",
+            {
+              entityId: id,
+              parityMatched:
+                canonicalJson(legacyRecord) === canonicalJson(migratedRecord),
+            },
+            context.matchId
+          )
+        );
+      }
 
       const playerId = entityId(unit.player());
       if (!indexes["unitsByPlayer"][playerId]) {
@@ -230,7 +255,26 @@ export class SnapshotExporter {
       unitActionsById = {};
       for (const unit of units) {
         const id = entityId(unit);
-        unitActionsById[id] = describeUnitActions(unit as never);
+        const legacyActions = describeUnitActions(unit as never);
+        const migratedActions = context.unitsAdapter
+          ? context.unitsAdapter.describeUnitActions(unit as never)
+          : legacyActions;
+        unitActionsById[id] = useMigratedUnits ? migratedActions : legacyActions;
+
+        if (shouldShadowCompare(context.cutover, "units") && context.unitsAdapter) {
+          context.observability?.record(
+            createObservabilityEvent(
+              "migration.shadow.units",
+              {
+                entityId: id,
+                legacyActionCount: legacyActions.length,
+                migratedActionCount: migratedActions.length,
+                parityMatched: legacyActions.length === migratedActions.length,
+              },
+              context.matchId
+            )
+          );
+        }
       }
     }
 

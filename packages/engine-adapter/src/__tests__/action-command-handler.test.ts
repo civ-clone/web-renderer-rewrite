@@ -229,5 +229,45 @@ describe("ActionCommandHandler", () => {
       "command.result",
     ]);
   });
+
+  it("uses migrated units resolver when cutover mode is migrated", () => {
+    const handler = new ActionCommandHandler();
+    const unitAction = {
+      constructor: { name: "Move" },
+      unit: () => ({ id: () => "Unit-1", getStableId: () => "unit:42:3" }),
+      from: () => ({ x: () => 3, y: () => 4 }),
+      to: () => ({ x: () => 3, y: () => 5 }),
+    };
+    let resolverCalls = 0;
+    const { context, calls } = makeContext({
+      getUnitActions: () => [unitAction as never],
+      cutover: { units: "migrated" },
+      unitsAdapter: {
+        toUnitRecord: () => ({}),
+        describeUnitActions: () => [],
+        resolveUnitActions: (_command, legacyActions) => {
+          resolverCalls += 1;
+          return legacyActions;
+        },
+      },
+    });
+
+    const result = handler.onActionCommand(
+      makeCommand({
+        commandId: "cmd-10",
+        clientSeq: 10,
+        tier: "unit",
+        actionType: "Move",
+        unitStableId: "unit:42:3",
+        fromTileId: "3:4",
+        toTileId: "3:5",
+      }),
+      context
+    );
+
+    expect(result.status).toBe("accepted");
+    expect(resolverCalls).toBe(1);
+    expect(calls.unit).toBe(1);
+  });
 });
 
