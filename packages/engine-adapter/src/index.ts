@@ -34,6 +34,13 @@ export {
 
 export { buildActionManifest } from "./action-manifest.js";
 
+export {
+  ValidationBoundary,
+  BOUNDARY_ERROR_CODES,
+  type BoundaryErrorCode,
+  type BoundaryValidationResult,
+} from "./validation-boundary.js";
+
 export { DeltaExporter } from "./delta-exporter.js";
 
 export {
@@ -47,4 +54,5 @@ export {
   resetRegistries,
   type ResettableRegistry,
 } from "./registry-lifecycle.js";
+
 

@@ -11,6 +11,7 @@ It provides:
 - `ActionCommandHandler` / `ActionCommandHandlerContext`
 - `SnapshotExporter` / `SnapshotExporterContext`
 - `buildActionManifest(snapshot)`
+- `ValidationBoundary` / `BOUNDARY_ERROR_CODES` / `BoundaryValidationResult`
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -105,6 +106,33 @@ const snapshotB = snapshotExporter.buildSnapshot(contextB);
 const delta = deltaExporter.buildDelta(snapshotA, snapshotB);
 ```
 
+## WP-009 validation boundary
+
+`ValidationBoundary` validates raw unknown payloads at protocol trust boundaries before any domain logic runs:
+
+- `validateInboundMessage(raw)` — validates against full `RendererMessage` discriminated union
+- `validateOutboundMessage(raw)` — validates against full `EngineMessage` discriminated union
+- `validateActionCommand(raw)` — standalone `ActionCommand` validation (convenience)
+- `validateTurnEndRequest(raw)` — standalone `TurnEndRequest` validation
+- `validateSnapshot(raw)` — standalone `SnapshotEnvelope` validation
+- `validateDelta(raw)` — standalone `DeltaEnvelope` validation
+- `validateActionResult(raw)` — standalone `ActionResult` validation
+- `validateTurnEndResult(raw)` — standalone `TurnEndResult` validation
+
+All methods return `BoundaryValidationResult<T>` — never throw. Failures carry `SCHEMA_INVALID` error code and a list of field-level error strings.
+
+Typical ingress call chain:
+
+```ts
+const msg = boundary.validateInboundMessage(rawMessage);
+if (!msg.ok) return sendError(msg.errorCode, msg.errors);
+
+if (msg.data.type === "action") {
+  const result = handler.onActionCommand(msg.data.payload, context);
+  // ...
+}
+```
+
 ## Development
 
 ```bash
@@ -112,5 +140,8 @@ pnpm build
 pnpm test
 pnpm lint
 pnpm wp006:demo
+pnpm wp009:bench
 ```
+
+
 
