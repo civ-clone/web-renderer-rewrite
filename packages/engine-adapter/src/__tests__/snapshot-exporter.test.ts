@@ -132,6 +132,34 @@ describe("SnapshotExporter — envelope structure", () => {
       exporter.buildSnapshot(context).checksum
     );
   });
+
+  it("rejects additional providers that collide with protected core names", () => {
+    const exporter = new SnapshotExporter();
+
+    expect(() =>
+      exporter.buildSnapshot(
+        makeContext({
+          getAdditionalEntityTables: () => ({
+            players: {
+              "player:mod": { test: true },
+            },
+          }),
+        })
+      )
+    ).toThrow();
+
+    expect(() =>
+      exporter.buildSnapshot(
+        makeContext({
+          getAdditionalIndexes: () => ({
+            unitsByPlayer: {
+              "player:1": ["unit:x"],
+            },
+          }),
+        })
+      )
+    ).toThrow();
+  });
 });
 
 describe("SnapshotExporter — entities table", () => {

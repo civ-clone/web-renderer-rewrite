@@ -33,6 +33,7 @@ import {
   shouldUseMigratedPath,
   type MigrationCutoverConfig,
 } from "./migration-cutover.js";
+import { buildAdditionalDataBridge } from "./additional-data-bridge.js";
 import type {
   CitiesMigrationAdapter,
   UnitsMigrationAdapter,
@@ -269,15 +270,21 @@ export class SnapshotExporter {
     }
 
     // ---- additional entities/indexes from configurable providers ----
-    const additionalEntities = context.getAdditionalEntityTables?.() ?? {};
-    const additionalIndexes = context.getAdditionalIndexes?.() ?? {};
+    const additionalBridge = buildAdditionalDataBridge({
+      entities: context.getAdditionalEntityTables?.(),
+      indexes: context.getAdditionalIndexes?.(),
+      options: {
+        protectedEntityTables: ["players", "units", "cities"],
+        protectedIndexes: ["unitsByPlayer", "citiesByPlayer"],
+      },
+    });
     mergeNestedStringMaps(
       entities as Record<string, Record<string, unknown>>,
-      additionalEntities as Record<string, Record<string, unknown>>
+      additionalBridge.entities as Record<string, Record<string, unknown>>
     );
     mergeNestedStringMaps(
       indexes as Record<string, Record<string, unknown>>,
-      additionalIndexes as Record<string, Record<string, unknown>>
+      additionalBridge.indexes as Record<string, Record<string, unknown>>
     );
 
     // ---- requirementsByPlayer ----

@@ -15,6 +15,7 @@ It provides:
 - `InMemoryObservabilitySink` / `NoopObservabilitySink`
 - `ReplayHarness` / `buildReproPacket(...)`
 - `buildMigrationParityReport(events)`
+- `buildAdditionalDataBridge(...)`
 - `DefaultUnitsMigrationAdapter` / `DefaultCitiesMigrationAdapter` + cutover helpers (`cutoverMode`, `shouldUseMigratedPath`, `shouldShadowCompare`)
 - `RegistryContainer` / `withRegistryContainer(...)` / `requireRegistryContainer()`
 - `DeltaExporter`
@@ -162,6 +163,12 @@ if (msg.data.type === "action") {
 - `requireRegistryContainer()` reads current match container safely in async code
 - Supports parallel match isolation and nested context scopes
 
+## WP-013 AdditionalData rendering bridge
+
+- `buildAdditionalDataBridge(...)` normalizes dynamic entity/index tables from `registerAdditionalData`-style providers
+- Enforces protected core name collision checks by default (`players`, `units`, `cities`, and core indexes)
+- `SnapshotExporter` consumes dynamic table/index hooks through deterministic merge behavior
+
 ## Development
 
 ```bash
@@ -173,6 +180,7 @@ pnpm wp009:bench
 pnpm wp010:demo
 pnpm wp011:demo
 pnpm wp012:demo
+pnpm wp013:demo
 ```
 
 

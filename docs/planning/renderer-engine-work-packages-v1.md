@@ -152,13 +152,13 @@ Current progress:
 - Parallel matches do not leak registry state.
 - Demo + tests validate nested context behavior.
 
-## WP-013: AdditionalData Rendering Bridge
+## WP-013: AdditionalData Rendering Bridge ✅ DONE
 
 **Scope**
 - Bridge upstream `registerAdditionalData` providers (realized via `DataObject.toPlainObject`) into protocol snapshots without hardcoding entity/table names.
 - Keep renderer contract entity-agnostic by supporting dynamic tables/indexes in `entities`/`indexes`.
 
-**Definition of Done**
+**Definition of Done** ✅
 - `SnapshotExporter` supports additional table/index provider hooks with deterministic checksums.
 - Protocol schema tests explicitly accept representative dynamic tables/indexes (e.g. per-player world views).
 - Documentation defines naming/determinism rules for dynamic tables and index keys.
@@ -171,7 +171,7 @@ Current progress:
 4. WP-008 ✅, WP-009 ✅, WP-010 ✅
 5. WP-011
 6. WP-012
-7. WP-013 and progressive subsystem cutovers
+7. Progressive subsystem cutovers
 
 ## Parallelization Opportunities
 

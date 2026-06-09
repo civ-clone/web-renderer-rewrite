@@ -70,6 +70,12 @@ export {
 } from "./migration-parity-report.js";
 
 export {
+  buildAdditionalDataBridge,
+  type AdditionalDataBridgeOptions,
+  type AdditionalDataBridgeResult,
+} from "./additional-data-bridge.js";
+
+export {
   cutoverMode,
   shouldUseMigratedPath,
   shouldShadowCompare,

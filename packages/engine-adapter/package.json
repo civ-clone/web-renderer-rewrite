@@ -20,7 +20,8 @@
     "wp009:bench": "pnpm build && node dist/examples/wp009-validation-boundary-bench.js",
     "wp010:demo": "pnpm build && node dist/examples/wp010-replay-harness-runner.js",
     "wp011:demo": "pnpm build && node dist/examples/wp011-migration-cutover-runner.js",
-    "wp012:demo": "pnpm build && node dist/examples/wp012-registry-container-runner.js"
+    "wp012:demo": "pnpm build && node dist/examples/wp012-registry-container-runner.js",
+    "wp013:demo": "pnpm build && node dist/examples/wp013-additional-data-bridge-runner.js"
   },
   "dependencies": {
     "@civ-clone/protocol-state": "workspace:*"
