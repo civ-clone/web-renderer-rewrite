@@ -1,6 +1,9 @@
+packages:
+  - 'packages/*'
+
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  canvas: set this to true or false
-  core-js: set this to true or false
-  esbuild: set this to true or false
+  '@parcel/watcher': false
+  canvas: false
+  core-js: false
+  esbuild: true
 blockExoticSubdeps: false
