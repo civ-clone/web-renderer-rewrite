@@ -17,7 +17,8 @@
     "test": "vitest run",
     "lint": "tsc --noEmit",
     "wp006:demo": "pnpm build && node dist/examples/wp006-deterministic-rng-runner.js",
-    "wp009:bench": "pnpm build && node dist/examples/wp009-validation-boundary-bench.js"
+    "wp009:bench": "pnpm build && node dist/examples/wp009-validation-boundary-bench.js",
+    "wp010:demo": "pnpm build && node dist/examples/wp010-replay-harness-runner.js"
   },
   "dependencies": {
     "@civ-clone/protocol-state": "workspace:*"
@@ -27,4 +28,5 @@
     "vitest": "^3.0.0"
   }
 }
+
 

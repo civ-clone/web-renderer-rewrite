@@ -3,6 +3,10 @@ import {
   type PatchOp,
   type SnapshotEnvelope,
 } from "@civ-clone/protocol-state";
+import {
+  createObservabilityEvent,
+  type ObservabilitySink,
+} from "./observability.js";
 
 type DeltaSource = {
   turn: number;
@@ -11,6 +15,7 @@ type DeltaSource = {
   requirementsByPlayer: SnapshotEnvelope["requirementsByPlayer"];
   actionsByPlayer?: SnapshotEnvelope["actionsByPlayer"];
   unitActionsById?: SnapshotEnvelope["unitActionsById"];
+  actionManifest?: SnapshotEnvelope["actionManifest"];
 };
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -92,11 +97,16 @@ function sourceFromSnapshot(snapshot: SnapshotEnvelope): DeltaSource {
     requirementsByPlayer: snapshot.requirementsByPlayer,
     actionsByPlayer: snapshot.actionsByPlayer,
     unitActionsById: snapshot.unitActionsById,
+    actionManifest: snapshot.actionManifest,
   };
 }
 
 export class DeltaExporter {
-  buildDelta(previous: SnapshotEnvelope, next: SnapshotEnvelope): DeltaEnvelope {
+  buildDelta(
+    previous: SnapshotEnvelope,
+    next: SnapshotEnvelope,
+    observability?: ObservabilitySink
+  ): DeltaEnvelope {
     if (previous.protocolVersion !== next.protocolVersion) {
       throw new Error("DeltaExporter: protocolVersion mismatch between snapshots.");
     }
@@ -112,7 +122,7 @@ export class DeltaExporter {
     const patches: PatchOp[] = [];
     diffValues(patches, "", sourceFromSnapshot(previous), sourceFromSnapshot(next));
 
-    return {
+    const delta = {
       protocolVersion: next.protocolVersion,
       matchId: next.matchId,
       baseVersion: previous.stateVersion,
@@ -120,6 +130,22 @@ export class DeltaExporter {
       patches,
       resultChecksum: next.checksum,
     };
+
+    observability?.record(
+      createObservabilityEvent(
+        "delta.exported",
+        {
+          baseVersion: previous.stateVersion,
+          targetVersion: next.stateVersion,
+          patchCount: patches.length,
+          resultChecksum: next.checksum,
+        },
+        next.matchId
+      )
+    );
+
+    return delta;
   }
 }
+
 

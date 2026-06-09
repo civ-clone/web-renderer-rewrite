@@ -86,23 +86,27 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - 71 engine-adapter tests + 35 protocol-state tests passing
 - Commit: `4675ff2`
 
-**WP-009: Validation Boundary Layer (architectural WP-009)**
-- Add ingress/egress schema validation wired to protocol error codes
-- Benchmark overhead at target action rate
-- Dependency: WP-001 ✅ (`validate()` helper already exists in protocol-state)
-- **Priority:** High — closes the missing enforcement loop before renderer integration
-- **Duration estimate:** 1–2 days
+**WP-009: Validation Boundary Layer (architectural WP-009) ✅ DONE**
+- Added `ValidationBoundary` ingress/egress validation wired to `SCHEMA_INVALID` protocol boundary code
+- Added boundary schema coverage tests and throughput benchmark runner
+- Dependency: WP-001 ✅ (`validate()` helper in protocol-state)
+- Commit: `8fb629d`
 
-**WP-010: Per-match registry container (Finding 6 Phase 2)**
+**WP-010: Observability and Replay Harness (architectural WP-010) ✅ DONE**
+- Added structured observability sinks and event stream integration in action/snapshot/delta paths
+- Added deterministic `ReplayHarness` for command stream replay + checksum verification
+- Added `buildReproPacket(...)` for minimal repro artifact exports
+
+**WP-011: Migration adapters and cutover (architectural WP-011)**
+- Implement legacy-to-envelope adapters and subsystem-by-subsystem rollout
+- Add targeted shadow checks for parity during migration
+- **Priority:** High — primary remaining delivery lane
+
+**WP-012: Per-match registry container (Finding 6 Phase 2)**
 - Implement RegistryContainer for multiplayer server scenarios
 - Use context variable (Node.js AsyncLocalStorage or similar)
 - Dependency: multiplayer server implementation
 - **Priority:** Low (deferred until multiplayer work begins)
-
-**WP-011+: Observability/Replay and Migration (architectural WP-010 / WP-011)**
-- Observability: structured logs, deterministic replay harness, repro packets
-- Migration: legacy-to-envelope adapters, subsystem-by-subsystem cutover
-- TBD based on project evolution
 
 ## Quick prioritization summary
 
@@ -120,9 +124,10 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-006 | Seeded RNG | 3 | 1–2d | None | Parallel | ✅ DONE |
 | WP-007 | Registry lifecycle | 3 | 1d | None | Parallel | ✅ DONE |
 | WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP | ✅ DONE |
-| WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | 🔜 NEXT |
-| WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ⏳ |
-| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | ⏳ |
+| WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | ✅ DONE |
+| WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
+| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | 🔜 NEXT |
+| WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | ⏳ |
 
 ## Critical path (minimum for MVP)
 
@@ -161,6 +166,8 @@ All work packages are ready for implementation by human engineers or AI agents. 
 - Estimated duration
 
 No further architecture discussions needed unless new constraints emerge.
+
+
 
 
 

@@ -4,6 +4,10 @@ import {
   type ActionResult,
   type RngTrace,
 } from "@civ-clone/protocol-state";
+import {
+  createObservabilityEvent,
+  type ObservabilitySink,
+} from "./observability.js";
 
 type EngineValueRef = {
   id?: () => string;
@@ -35,6 +39,7 @@ type EngineUnitAction = {
 export interface ActionCommandHandlerContext {
   matchId: string;
   currentTurn?: number;
+  observability?: ObservabilitySink;
   getPlayerActions(command: ActionCommand): EnginePlayerAction[];
   getUnitActions(command: ActionCommand): EngineUnitAction[];
   executePlayerAction(action: EnginePlayerAction, command: ActionCommand): void;
@@ -121,8 +126,27 @@ export class ActionCommandHandler {
     command: ActionCommand,
     context: ActionCommandHandlerContext
   ): ActionResult {
+    const emit = (type: string, payload: Record<string, unknown>): void => {
+      context.observability?.record(createObservabilityEvent(type, payload, context.matchId));
+    };
+
+    emit("command.received", {
+      commandId: command.commandId,
+      actorPlayerId: command.actorPlayerId,
+      clientSeq: command.clientSeq,
+      tier: command.tier,
+      actionType: command.actionType,
+    });
+
     const cached = this.#resultByCommandId.get(command.commandId);
     if (cached) {
+      emit("command.result", {
+        commandId: command.commandId,
+        status: cached.status,
+        serverSeq: cached.serverSeq,
+        reasonCode: cached.reasonCode,
+        cached: true,
+      });
       return cached;
     }
 
@@ -137,12 +161,24 @@ export class ActionCommandHandler {
       ...(rng ? { rng } : {}),
     });
 
+    const rejectAndEmit = (reasonCode: string, message: string): ActionResult => {
+      const result = reject(reasonCode, message);
+      emit("command.result", {
+        commandId: command.commandId,
+        status: result.status,
+        serverSeq: result.serverSeq,
+        reasonCode,
+        cached: false,
+      });
+      return result;
+    };
+
     if (command.protocolVersion !== PROTOCOL_VERSION) {
-      return reject("PROTOCOL_VERSION_MISMATCH", "Unsupported protocol version.");
+      return rejectAndEmit("PROTOCOL_VERSION_MISMATCH", "Unsupported protocol version.");
     }
 
     if (command.matchId !== context.matchId) {
-      return reject("MATCH_ID_MISMATCH", "Command matchId does not match handler context.");
+      return rejectAndEmit("MATCH_ID_MISMATCH", "Command matchId does not match handler context.");
     }
 
     if (
@@ -150,12 +186,12 @@ export class ActionCommandHandler {
       typeof command.expectedTurn === "number" &&
       context.currentTurn !== command.expectedTurn
     ) {
-      return reject("TURN_MISMATCH", "Command expectedTurn does not match current turn.");
+      return rejectAndEmit("TURN_MISMATCH", "Command expectedTurn does not match current turn.");
     }
 
     const lastSeq = this.#lastAcceptedClientSeqByPlayer.get(command.actorPlayerId);
     if (typeof lastSeq === "number" && command.clientSeq <= lastSeq) {
-      return reject(
+      return rejectAndEmit(
         "CLIENT_SEQ_OUT_OF_ORDER",
         "Command clientSeq must be greater than last accepted sequence."
       );
@@ -169,11 +205,11 @@ export class ActionCommandHandler {
         .filter((action) => playerActionMatches(command, action));
 
       if (matches.length > 1) {
-        return reject("ACTION_AMBIGUOUS", "Multiple player actions matched command.");
+        return rejectAndEmit("ACTION_AMBIGUOUS", "Multiple player actions matched command.");
       }
 
       if (matches.length === 0) {
-        return reject("ACTION_NOT_FOUND", "No player action matched command.");
+        return rejectAndEmit("ACTION_NOT_FOUND", "No player action matched command.");
       }
 
       resolved = matches[0];
@@ -183,11 +219,11 @@ export class ActionCommandHandler {
         .filter((action) => unitActionMatches(command, action));
 
       if (matches.length > 1) {
-        return reject("ACTION_AMBIGUOUS", "Multiple unit actions matched command.");
+        return rejectAndEmit("ACTION_AMBIGUOUS", "Multiple unit actions matched command.");
       }
 
       if (matches.length === 0) {
-        return reject("ACTION_NOT_FOUND", "No unit action matched command.");
+        return rejectAndEmit("ACTION_NOT_FOUND", "No unit action matched command.");
       }
 
       resolved = matches[0];
@@ -200,7 +236,7 @@ export class ActionCommandHandler {
         context.executeUnitAction(resolved as EngineUnitAction, command);
       }
     } catch (error) {
-      return reject(
+      return rejectAndEmit(
         "ACTION_EXECUTION_ERROR",
         error instanceof Error ? error.message : "Unknown execution error."
       );
@@ -216,8 +252,16 @@ export class ActionCommandHandler {
       ...(rng ? { rng } : {}),
     };
 
+    emit("command.result", {
+      commandId: command.commandId,
+      status: accepted.status,
+      serverSeq: accepted.serverSeq,
+      cached: false,
+    });
+
     this.#resultByCommandId.set(command.commandId, accepted);
 
     return accepted;
   }
 }
+

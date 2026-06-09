@@ -104,24 +104,24 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Schema coverage in `@civ-clone/protocol-state` (`actionManifestEntrySchema`, `actionManifestEnvelopeSchema`).
 - 71 engine-adapter tests + 35 protocol-state tests passing.
 
-## WP-009: Validation Boundary Layer
+## WP-009: Validation Boundary Layer ✅ DONE
 
 **Scope**
 - Add boundary validation for inbound/outbound envelopes.
 - Keep hot-path internals minimally validated for performance.
 
-**Definition of Done**
+**Definition of Done** ✅
 - Invalid envelopes are rejected before domain logic execution.
 - Validation errors map to explicit protocol error codes.
 - Benchmark confirms acceptable overhead at target action rate.
 
-## WP-010: Observability and Replay Harness
+## WP-010: Observability and Replay Harness ✅ DONE
 
 **Scope**
 - Add structured logs for commands, results, versions, and resyncs.
 - Add deterministic replay harness from recorded command streams.
 
-**Definition of Done**
+**Definition of Done** ✅
 - Replay run reaches stable checksum.
 - Logs include enough data to debug desync root causes.
 - Tooling can export a minimal repro packet for failures.
@@ -142,15 +142,15 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 1. WP-001, WP-002, WP-004
 2. WP-003, WP-005
 3. WP-006, WP-007
-4. WP-008 ✅, WP-009
-5. WP-010
+4. WP-008 ✅, WP-009 ✅, WP-010 ✅
+5. WP-011
 6. WP-011 and progressive subsystem cutovers
 
 ## Parallelization Opportunities
 
 - WP-006 can begin once WP-001 contract drafts stabilize.
 - WP-007 can proceed in parallel with WP-005 using mocked envelopes.
-- WP-010 can start early with synthetic command streams.
+- WP-011 can start with one subsystem migration while others remain on legacy path.
 
 ## Initial Risks
 

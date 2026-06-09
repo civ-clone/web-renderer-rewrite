@@ -4,6 +4,7 @@ import {
   ActionCommandHandler,
   type ActionCommandHandlerContext,
 } from "../action-command-handler.js";
+import { InMemoryObservabilitySink } from "../observability.js";
 
 function makeCommand(overrides: Partial<ActionCommand> = {}): ActionCommand {
   return {
@@ -205,4 +206,28 @@ describe("ActionCommandHandler", () => {
     expect(result.status).toBe("accepted");
     expect(result.rng).toEqual({ seed: "abc123", counter: 5 });
   });
+
+  it("emits command observability events when sink is provided", () => {
+    const handler = new ActionCommandHandler();
+    const action = makePlayerAction("ChooseResearch", {
+      id: () => "PlayerResearch-1",
+    });
+    const sink = new InMemoryObservabilitySink();
+    const { context } = makeContext({
+      getPlayerActions: () => [action],
+      observability: sink,
+    });
+
+    const result = handler.onActionCommand(
+      makeCommand({ commandId: "cmd-9", clientSeq: 9, valueId: "PlayerResearch-1" }),
+      context
+    );
+
+    expect(result.status).toBe("accepted");
+    expect(sink.events().map((event) => event.type)).toEqual([
+      "command.received",
+      "command.result",
+    ]);
+  });
 });
+

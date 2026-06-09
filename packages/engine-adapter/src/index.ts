@@ -41,6 +41,28 @@ export {
   type BoundaryValidationResult,
 } from "./validation-boundary.js";
 
+export {
+  InMemoryObservabilitySink,
+  NoopObservabilitySink,
+  createObservabilityEvent,
+  type ObservabilityEvent,
+  type ObservabilitySink,
+} from "./observability.js";
+
+export {
+  ReplayHarness,
+  type ReplayCommandStreamEntry,
+  type ReplayHarnessContext,
+  type ReplayFailure,
+  type ReplayRunOptions,
+  type ReplayRunSummary,
+} from "./replay-harness.js";
+
+export {
+  buildReproPacket,
+  type ReplayFailurePacket,
+} from "./repro-packet.js";
+
 export { DeltaExporter } from "./delta-exporter.js";
 
 export {
@@ -54,5 +76,6 @@ export {
   resetRegistries,
   type ResettableRegistry,
 } from "./registry-lifecycle.js";
+
 
 

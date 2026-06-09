@@ -24,6 +24,10 @@ import {
   type UnitActionDescriptor,
   type RngMetadata,
 } from "@civ-clone/protocol-state";
+import {
+  createObservabilityEvent,
+  type ObservabilitySink,
+} from "./observability.js";
 import { describePlayerActions } from "./player-action-adapter.js";
 import { describeUnitActions } from "./unit-action-adapter.js";
 import { buildActionManifest } from "./action-manifest.js";
@@ -93,6 +97,7 @@ export interface SnapshotExporterContext {
   includeActionsByPlayer?: boolean;
   includeUnitActionsById?: boolean;
   includeActionManifest?: boolean;
+  observability?: ObservabilitySink;
   /** Optional RNG metadata to embed in snapshot for deterministic diagnostics */
   rng?: RngMetadata;
 }
@@ -261,7 +266,26 @@ export class SnapshotExporter {
 
     const checksum = sha256hex(canonicalJson(envelopeBody));
 
+    context.observability?.record(
+      createObservabilityEvent(
+        "snapshot.exported",
+        {
+          stateVersion: context.stateVersion,
+          turn: context.turn,
+          checksum,
+          playerCount: players.length,
+          unitCount: units.length,
+          cityCount: cities.length,
+          includesActionsByPlayer: actionsByPlayer !== undefined,
+          includesUnitActionsById: unitActionsById !== undefined,
+          includesActionManifest: actionManifest !== undefined,
+        },
+        context.matchId
+      )
+    );
+
     return { ...envelopeBody, checksum };
   }
 }
+
 

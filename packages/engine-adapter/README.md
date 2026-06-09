@@ -1,6 +1,6 @@
 # @civ-clone/engine-adapter
 
-Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-007).
+Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-010).
 
 It provides:
 
@@ -12,6 +12,8 @@ It provides:
 - `SnapshotExporter` / `SnapshotExporterContext`
 - `buildActionManifest(snapshot)`
 - `ValidationBoundary` / `BOUNDARY_ERROR_CODES` / `BoundaryValidationResult`
+- `InMemoryObservabilitySink` / `NoopObservabilitySink`
+- `ReplayHarness` / `buildReproPacket(...)`
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -133,6 +135,13 @@ if (msg.data.type === "action") {
 }
 ```
 
+## WP-010 observability and replay harness
+
+- `InMemoryObservabilitySink` captures structured events (`command.received`, `command.result`, `snapshot.exported`, `delta.exported`, `replay.*`)
+- `ActionCommandHandler`, `SnapshotExporter`, and `DeltaExporter` emit observability events when a sink is provided
+- `ReplayHarness#run(stream, context, options)` replays deterministic command streams and verifies final checksum expectations
+- `buildReproPacket(...)` exports a minimal repro artifact: summary + command stream + recent observability events
+
 ## Development
 
 ```bash
@@ -141,7 +150,9 @@ pnpm test
 pnpm lint
 pnpm wp006:demo
 pnpm wp009:bench
+pnpm wp010:demo
 ```
+
 
 
 
