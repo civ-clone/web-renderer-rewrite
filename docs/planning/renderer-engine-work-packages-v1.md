@@ -69,7 +69,7 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Out-of-order delta application is detected and rejected.
 - Delta retention policy is configurable.
 
-## WP-006: Renderer State Store
+## WP-006: Renderer State Store 🚧 IN PROGRESS
 
 **Scope**
 - Build client store for snapshot and delta apply.

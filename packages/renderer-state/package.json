@@ -1,0 +1,28 @@
+{
+  "name": "@civ-clone/renderer-state",
+  "version": "0.1.0",
+  "description": "Client-side renderer state store: hydrates from snapshots, applies deltas, exposes lookup helpers (WP-006)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@civ-clone/protocol-state": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}
+

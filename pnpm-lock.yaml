@@ -219,6 +219,19 @@ importers:
         specifier: ^3.0.0
         version: 3.2.6(@types/node@22.19.20)(sass-embedded@1.100.0)(sass@1.100.0)
 
+  packages/renderer-state:
+    dependencies:
+      '@civ-clone/protocol-state':
+        specifier: workspace:*
+        version: link:../protocol-state
+    devDependencies:
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.6(@types/node@22.19.20)(sass-embedded@1.100.0)(sass@1.100.0)
+
 packages:
 
   '@babel/runtime@7.29.2':

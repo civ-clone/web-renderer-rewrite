@@ -128,8 +128,8 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-003 | Action handler | 1 | 2–3d | WP-002 | WP-002 | ✅ DONE |
 | WP-004 | Snapshot export | 2 | 2–3d | WP-002b | WP-002b | ✅ DONE |
 | WP-005 | Delta export | 2 | 2–3d | WP-004 | WP-004 | ✅ DONE |
-| WP-006 | Seeded RNG | 3 | 1–2d | None | Parallel | ✅ DONE |
-| WP-007 | Registry lifecycle | 3 | 1d | None | Parallel | ✅ DONE |
+| WP-006 | Renderer state store | 3 | 2–3d | WP-005 | WP-005 ✅ | 🚧 IN PROGRESS |
+| WP-007 | Transport adapter | 3 | 2–3d | WP-006 | WP-006 | — |
 | WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP | ✅ DONE |
 | WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | ✅ DONE |
 | WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
@@ -151,7 +151,7 @@ WP-004 (Snapshot exporter)
 
 **Total:** ~2 weeks for a working, deterministic action/state protocol with snapshots.
 
-Parallel tracks (WP-006, WP-007) can run in weeks 1–2 without blocking the critical path.
+WP-006 (Renderer State Store) is now the next active implementation lane — `RendererStore` scaffolded in `@civ-clone/renderer-state`. WP-007 (Transport Adapter Layer) follows once WP-006 DoD is complete.
 
 ## Documentation references
 
