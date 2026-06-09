@@ -194,10 +194,10 @@ Use subsystem-by-subsystem cutover with targeted shadow checks:
 
 ## 12. Open Decisions
 
-- Optimistic UI policy for optional actions before ack.
-- Whether rejected actions should include remediation hints.
-- Final delta retention/checkpoint tuning.
-- AI clients using exact same wire path from day one.
+- **Optimistic UI policy (RESOLVED):** Pessimistic — renderer waits for `ActionResult` ack before applying state changes, for both optional and mandatory actions. Round-trip is negligible in local/host-authoritative mode. Rollback complexity avoided. Revisit if perceived latency becomes an issue in networked play.
+- **Remediation hints in rejections (RESOLVED):** Omitted. `reasonCode` is sufficient; renderer derives alternatives from the current `actionsByPlayer`/`unitActionsById` snapshot data. Revisit if a future UX requirement cannot be met from snapshot data alone.
+- **Delta retention / checkpoint defaults (RESOLVED):** Retain 128 delta versions; emit a full snapshot checkpoint every turn. Clients falling more than 128 versions behind request a full snapshot resync. Adjust thresholds based on observed memory pressure and network performance.
+- **AI client protocol path (RESOLVED):** AI players are first-class server-side clients. They consume per-player `SnapshotEnvelope`/`DeltaEnvelope` streams and submit `ActionCommand`s via the same `ActionCommandHandler` as human renderers. No fog-of-war bypass or privileged engine access — AI sees only what a human player would. Mixed AI/human multiplayer is correct by construction.
 
 ## 12.1 Schema Stabilization Policy
 

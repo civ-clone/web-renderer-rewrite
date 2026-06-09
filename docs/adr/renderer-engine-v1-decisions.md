@@ -93,7 +93,7 @@ Last updated: 2026-06-09
 
 
 
-- **P-001:** Optimistic UI policy for optional actions before ack.
-- **P-002:** Should rejected actions include remediation hints?
-- **P-003:** Delta retention/checkpoint defaults after perf testing.
-- **P-004:** AI clients on exact same protocol path from day one.
+- **P-001 RESOLVED:** Pessimistic UI for optional actions — renderer waits for `ActionResult` ack before applying any state change. Rationale: local/host-authoritative round-trip is sub-millisecond; avoids rollback complexity in the render-store state machine. Can be relaxed to optimistic per-action-type in a future iteration if latency becomes perceptible.
+- **P-002 RESOLVED:** No remediation hints in `ActionResult`. `reasonCode` is sufficient; the renderer derives alternatives from the existing `actionsByPlayer`/`unitActionsById` snapshot data. Avoids duplicating work already done by the snapshot exporter and keeps the rejection path minimal. Revisit if a future UX requirement cannot be met from snapshot data alone.
+- **P-003 RESOLVED:** Delta retention window = 128 versions; snapshot checkpoint emitted every turn. Simple defaults that are easy to reason about and adjust later with perf data. Clients falling more than 128 versions behind trigger a full snapshot resync.
+- **P-004 RESOLVED:** AI clients run server-side as first-class protocol clients. They consume the same per-player `SnapshotEnvelope`/`DeltaEnvelope` stream as a human renderer and submit `ActionCommand`s through the same `ActionCommandHandler` path. AI receives only the information a human player would (no fog-of-war bypass, no cheating). This keeps the protocol contract continuously exercised by AI turns and makes mixed AI/human multiplayer trivially correct.
