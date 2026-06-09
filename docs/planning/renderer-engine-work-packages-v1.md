@@ -91,7 +91,20 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Adapter-level timeout/retry behavior is configurable.
 - Integration test runs in loopback and network-simulated modes.
 
-## WP-008: Validation Boundary Layer
+## WP-008: Action Manifest Extractor ✅ DONE
+
+**Scope**
+- Extract de-duplicated action manifest from live snapshot action descriptors.
+- Include optional `actionManifest` in `SnapshotEnvelope` for validator/debugger use.
+
+**Definition of Done** ✅
+- `buildActionManifest(snapshot)` returns stable, sorted, de-duplicated entries.
+- Each entry carries `requiresValueRef`, `requiresUnitRef`, `requiresFromTileRef`, `requiresToTileRef` flags.
+- `SnapshotExporter` includes manifest by default; opt-out via `includeActionManifest: false`.
+- Schema coverage in `@civ-clone/protocol-state` (`actionManifestEntrySchema`, `actionManifestEnvelopeSchema`).
+- 71 engine-adapter tests + 35 protocol-state tests passing.
+
+## WP-009: Validation Boundary Layer
 
 **Scope**
 - Add boundary validation for inbound/outbound envelopes.
@@ -102,7 +115,7 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Validation errors map to explicit protocol error codes.
 - Benchmark confirms acceptable overhead at target action rate.
 
-## WP-009: Observability and Replay Harness
+## WP-010: Observability and Replay Harness
 
 **Scope**
 - Add structured logs for commands, results, versions, and resyncs.
@@ -113,7 +126,7 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Logs include enough data to debug desync root causes.
 - Tooling can export a minimal repro packet for failures.
 
-## WP-010: Migration Adapters and Cutover
+## WP-011: Migration Adapters and Cutover
 
 **Scope**
 - Implement adapters from legacy object graph APIs to new envelopes.
@@ -129,14 +142,15 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 1. WP-001, WP-002, WP-004
 2. WP-003, WP-005
 3. WP-006, WP-007
-4. WP-008, WP-009
-5. WP-010 and progressive subsystem cutovers
+4. WP-008 ✅, WP-009
+5. WP-010
+6. WP-011 and progressive subsystem cutovers
 
 ## Parallelization Opportunities
 
 - WP-006 can begin once WP-001 contract drafts stabilize.
 - WP-007 can proceed in parallel with WP-005 using mocked envelopes.
-- WP-009 can start early with synthetic command streams.
+- WP-010 can start early with synthetic command streams.
 
 ## Initial Risks
 

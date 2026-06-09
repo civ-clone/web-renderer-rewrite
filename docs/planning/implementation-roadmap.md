@@ -79,37 +79,50 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 
 ### Phase 4 (Optional / Deferred — WP-008 onwards)
 
-**WP-008: Action manifest extractor (Finding 5)**
-- Introspect rule engine to enumerate possible actions
-- Build manifest at match initialization
-- Include in SnapshotEnvelope for validator/debugger
-- Dependency: WP-002 (action DTOs must be stable)
-- **Priority:** Low (documentation / validation tool)
-- **Duration estimate:** 1 day
+**WP-008: Action manifest extractor (Finding 5) ✅ DONE**
+- `buildActionManifest(snapshot)` extracts stable, de-duplicated manifest from snapshot action descriptors
+- Included in `SnapshotEnvelope` by default; opt-out via `includeActionManifest: false`
+- Schema coverage: `actionManifestEntrySchema`, `actionManifestEnvelopeSchema` in `@civ-clone/protocol-state`
+- 71 engine-adapter tests + 35 protocol-state tests passing
+- Commit: `4675ff2`
 
-**WP-009: Per-match registry container (Finding 6 Phase 2)**
+**WP-009: Validation Boundary Layer (architectural WP-009)**
+- Add ingress/egress schema validation wired to protocol error codes
+- Benchmark overhead at target action rate
+- Dependency: WP-001 ✅ (`validate()` helper already exists in protocol-state)
+- **Priority:** High — closes the missing enforcement loop before renderer integration
+- **Duration estimate:** 1–2 days
+
+**WP-010: Per-match registry container (Finding 6 Phase 2)**
 - Implement RegistryContainer for multiplayer server scenarios
 - Use context variable (Node.js AsyncLocalStorage or similar)
 - Dependency: multiplayer server implementation
 - **Priority:** Low (deferred until multiplayer work begins)
 
-**WP-010+: Other findings (Finding 3 Phase 2, advanced features)**
+**WP-011+: Observability/Replay and Migration (architectural WP-010 / WP-011)**
+- Observability: structured logs, deterministic replay harness, repro packets
+- Migration: legacy-to-envelope adapters, subsystem-by-subsystem cutover
 - TBD based on project evolution
 
 ## Quick prioritization summary
 
-| WP | Finding | Phase | Duration | Blocker? | Start after |
-|---|---|---|---|---|---|
-| WP-001 | Proto state | 1 | — | None | NOW |
-| WP-002 | Action DTO | 1 | 2–3d | None | WP-001 ✅ |
-| WP-002b | Stable IDs | 1 | 2–3d | None | WP-001 ✅ (parallel) |
-| WP-003 | Action handler | 1 | 2–3d | WP-002 | WP-002 |
-| WP-004 | Snapshot export | 2 | 2–3d | WP-002b | WP-002b |
-| WP-005 | Delta export | 2 | 2–3d | WP-004 | WP-004 |
-| WP-006 | Seeded RNG | 3 | 1–2d | None | Parallel |
-| WP-007 | Test infra | 3 | 1d | None | Parallel |
-| WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP |
-| WP-009 | Registry container | 4 | 1–2d | Multiplayer | Multiplayer design |
+> WP numbers align with `docs/planning/renderer-engine-work-packages-v1.md` (canonical).
+> WP-002b is a tactical sub-step of WP-002 not listed in the architectural doc.
+
+| WP | Finding / Scope | Phase | Duration | Blocker? | Start after | Status |
+|---|---|---|---|---|---|---|
+| WP-001 | Proto state | 1 | — | None | NOW | ✅ DONE |
+| WP-002 | Action DTO | 1 | 2–3d | None | WP-001 ✅ | ✅ DONE |
+| WP-002b | Stable IDs | 1 | 2–3d | None | WP-001 ✅ (parallel) | ✅ DONE |
+| WP-003 | Action handler | 1 | 2–3d | WP-002 | WP-002 | ✅ DONE |
+| WP-004 | Snapshot export | 2 | 2–3d | WP-002b | WP-002b | ✅ DONE |
+| WP-005 | Delta export | 2 | 2–3d | WP-004 | WP-004 | ✅ DONE |
+| WP-006 | Seeded RNG | 3 | 1–2d | None | Parallel | ✅ DONE |
+| WP-007 | Registry lifecycle | 3 | 1d | None | Parallel | ✅ DONE |
+| WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP | ✅ DONE |
+| WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | 🔜 NEXT |
+| WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ⏳ |
+| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | ⏳ |
 
 ## Critical path (minimum for MVP)
 
@@ -148,4 +161,6 @@ All work packages are ready for implementation by human engineers or AI agents. 
 - Estimated duration
 
 No further architecture discussions needed unless new constraints emerge.
+
+
 
