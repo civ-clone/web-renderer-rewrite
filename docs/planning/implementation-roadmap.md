@@ -103,11 +103,11 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - **Priority:** High — primary remaining delivery lane
 - **Status:** DONE — units and cities migration adapters wired with legacy/migrated/shadow modes and parity telemetry summaries
 
-**WP-012: Per-match registry container (Finding 6 Phase 2) 🚧 IN PROGRESS**
+**WP-012: Per-match registry container (Finding 6 Phase 2) ✅ DONE**
 - Implement RegistryContainer for multiplayer server scenarios
 - Use context variable (Node.js AsyncLocalStorage or similar)
 - Dependency: multiplayer server implementation
-- **Priority:** Medium — initial `RegistryContainer` boundary utility landed in `@civ-clone/engine-adapter`
+- **Status:** DONE — `RegistryContainer` + `withMatchScope` coordinator wired into command handler and snapshot exporter paths
 
 **WP-013: AdditionalData rendering bridge (modpack flexibility) ✅ DONE**
 - Map upstream `registerAdditionalData` / `DataObject.toPlainObject` outputs to dynamic `entities` and `indexes` tables
@@ -134,7 +134,7 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | ✅ DONE |
 | WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
 | WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | ✅ DONE |
-| WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | 🚧 IN PROGRESS |
+| WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | ✅ DONE |
 | WP-013 | AdditionalData bridge | 5 | 1–2d | None | Parallel with WP-012 | ✅ DONE |
 
 ## Critical path (minimum for MVP)

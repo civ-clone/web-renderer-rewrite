@@ -141,13 +141,13 @@ Current progress:
 - Units and cities subsystem migration adapters + cutover routing/shadow hooks landed in `@civ-clone/engine-adapter`.
 - Shadow telemetry parity reporting helper (`buildMigrationParityReport`) is available for migration confidence checks.
 
-## WP-012: Per-match Registry Container 🚧 IN PROGRESS
+## WP-012: Per-match Registry Container ✅ DONE
 
 **Scope**
 - Provide per-match registry isolation utility for async multiplayer/server flows.
 - Support async-context binding with safe nested and parallel isolation.
 
-**Definition of Done**
+**Definition of Done** ✅
 - Match-scoped container can be bound and resolved in async call chains.
 - Parallel matches do not leak registry state.
 - Demo + tests validate nested context behavior.

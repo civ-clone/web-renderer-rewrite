@@ -109,6 +109,14 @@ export {
   requireRegistryContainer,
 } from "./registry-container.js";
 
+export {
+  withMatchScope,
+  requireMatchId,
+  getMatchId,
+  type MatchScopeOptions,
+  type MatchScopeHandle,
+} from "./match-scope.js";
+
 export { DeltaExporter } from "./delta-exporter.js";
 
 export {

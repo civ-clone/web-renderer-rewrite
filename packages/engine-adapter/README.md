@@ -162,6 +162,8 @@ if (msg.data.type === "action") {
 - `withRegistryContainer(container, fn)` binds the container to current async flow using `AsyncLocalStorage`
 - `requireRegistryContainer()` reads current match container safely in async code
 - Supports parallel match isolation and nested context scopes
+- `withMatchScope(options, fn)` high-level coordinator: creates container, runs fn, auto-resets resettable registries on exit
+- `requireMatchId()` / `getMatchId()` — typed accessor for the match ID stored in the container
 
 ## WP-013 AdditionalData rendering bridge
 

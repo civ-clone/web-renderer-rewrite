@@ -3,24 +3,24 @@ import {
   requireRegistryContainer,
   withRegistryContainer,
 } from "../registry-container.js";
+import { withMatchScope, requireMatchId } from "../match-scope.js";
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function runMatch(matchId: string, delayMs: number): Promise<string> {
-  return withRegistryContainer(
-    new RegistryContainer({
+  return withMatchScope(
+    {
       matchId,
-      unitsRegistry: { reset: () => undefined },
-      citiesRegistry: { reset: () => undefined },
-    }),
+      registries: {
+        unitsRegistry: { reset: () => undefined },
+        citiesRegistry: { reset: () => undefined },
+      },
+    },
     async () => {
       await wait(delayMs);
-      const container = requireRegistryContainer();
-      const currentMatchId = container.require<string>("matchId");
-      container.resetAllResettable();
-      return currentMatchId;
+      return requireMatchId();
     }
   );
 }
@@ -34,6 +34,7 @@ async function main(): Promise<void> {
   ]);
 
   console.log("isolated contexts:", [a, b]);
+  console.log("(registries auto-reset on scope exit)");
 }
 
 main().catch((error) => {
