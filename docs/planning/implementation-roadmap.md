@@ -97,17 +97,17 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 - Added deterministic `ReplayHarness` for command stream replay + checksum verification
 - Added `buildReproPacket(...)` for minimal repro artifact exports
 
-**WP-011: Migration adapters and cutover (architectural WP-011) 🚧 IN PROGRESS**
+**WP-011: Migration adapters and cutover (architectural WP-011) ✅ DONE**
 - Implement legacy-to-envelope adapters and subsystem-by-subsystem rollout
 - Add targeted shadow checks for parity during migration
 - **Priority:** High — primary remaining delivery lane
-- **Status:** IN PROGRESS — units and cities subsystem adapters + cutover/shadow hooks implemented in `@civ-clone/engine-adapter`
+- **Status:** DONE — units and cities migration adapters wired with legacy/migrated/shadow modes and parity telemetry summaries
 
-**WP-012: Per-match registry container (Finding 6 Phase 2)**
+**WP-012: Per-match registry container (Finding 6 Phase 2) 🚧 IN PROGRESS**
 - Implement RegistryContainer for multiplayer server scenarios
 - Use context variable (Node.js AsyncLocalStorage or similar)
 - Dependency: multiplayer server implementation
-- **Priority:** Low (deferred until multiplayer work begins)
+- **Priority:** Medium — initial `RegistryContainer` boundary utility landed in `@civ-clone/engine-adapter`
 
 ## Quick prioritization summary
 
@@ -127,8 +127,8 @@ All 6 pre-planning findings are now documented, decisions locked, and ready for 
 | WP-008 | Action manifest | 4 | 1d | WP-002 | After MVP | ✅ DONE |
 | WP-009 | Validation boundary | 4 | 1–2d | None | WP-001 ✅ | ✅ DONE |
 | WP-010 | Observability / Replay | 4 | 2–3d | None | WP-009 | ✅ DONE |
-| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | 🚧 IN PROGRESS |
-| WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | ⏳ |
+| WP-011 | Migration / Cutover | 5 | ongoing | None | WP-010 | ✅ DONE |
+| WP-012 | Registry container | 5 | 1–2d | Multiplayer | Multiplayer design | 🚧 IN PROGRESS |
 
 ## Critical path (minimum for MVP)
 

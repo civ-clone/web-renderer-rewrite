@@ -1,6 +1,6 @@
 # @civ-clone/engine-adapter
 
-Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-010).
+Action/state adapter layer for renderer-engine boundaries (WP-002 through WP-012).
 
 It provides:
 
@@ -14,7 +14,9 @@ It provides:
 - `ValidationBoundary` / `BOUNDARY_ERROR_CODES` / `BoundaryValidationResult`
 - `InMemoryObservabilitySink` / `NoopObservabilitySink`
 - `ReplayHarness` / `buildReproPacket(...)`
+- `buildMigrationParityReport(events)`
 - `DefaultUnitsMigrationAdapter` / `DefaultCitiesMigrationAdapter` + cutover helpers (`cutoverMode`, `shouldUseMigratedPath`, `shouldShadowCompare`)
+- `RegistryContainer` / `withRegistryContainer(...)` / `requireRegistryContainer()`
 - `DeltaExporter`
 - `createDeterministicRng` / `deriveDeterministicSeed`
 - `RegistryLifecycle` / `resetRegistries`
@@ -150,6 +152,14 @@ if (msg.data.type === "action") {
 - `SnapshotExporter` accepts optional `cutover`, `unitsAdapter`, and `citiesAdapter` hooks
 - `ActionCommandHandler` accepts optional `cutover` + `unitsAdapter` hooks for unit command resolution routing
 - `shadow` mode keeps legacy behavior active while emitting parity telemetry for migration checks
+- `buildMigrationParityReport(events)` aggregates shadow parity telemetry into subsystem mismatch summaries
+
+## WP-012 per-match registry container (phase start)
+
+- `RegistryContainer` stores per-match registry instances by name
+- `withRegistryContainer(container, fn)` binds the container to current async flow using `AsyncLocalStorage`
+- `requireRegistryContainer()` reads current match container safely in async code
+- Supports parallel match isolation and nested context scopes
 
 ## Development
 
@@ -161,6 +171,7 @@ pnpm wp006:demo
 pnpm wp009:bench
 pnpm wp010:demo
 pnpm wp011:demo
+pnpm wp012:demo
 ```
 
 

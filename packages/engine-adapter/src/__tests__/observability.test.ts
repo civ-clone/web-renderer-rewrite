@@ -3,6 +3,7 @@ import { PROTOCOL_VERSION, type SnapshotEnvelope } from "@civ-clone/protocol-sta
 import { SnapshotExporter } from "../snapshot-exporter.js";
 import { DeltaExporter } from "../delta-exporter.js";
 import { InMemoryObservabilitySink } from "../observability.js";
+import { buildMigrationParityReport } from "../migration-parity-report.js";
 
 function makeSnapshot(overrides: Partial<SnapshotEnvelope> = {}): SnapshotEnvelope {
   return {
@@ -110,6 +111,10 @@ describe("observability integration", () => {
       parityMatched: false,
       mismatchType: "record",
     });
+
+    const report = buildMigrationParityReport(sink.events());
+    expect(report.bySubsystem.units.mismatched).toBeGreaterThanOrEqual(1);
+    expect(report.bySubsystem.cities.mismatched).toBe(1);
   });
 });
 

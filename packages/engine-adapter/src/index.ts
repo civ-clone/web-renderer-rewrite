@@ -64,6 +64,12 @@ export {
 } from "./repro-packet.js";
 
 export {
+  buildMigrationParityReport,
+  type MigrationParityReport,
+  type SubsystemParitySummary,
+} from "./migration-parity-report.js";
+
+export {
   cutoverMode,
   shouldUseMigratedPath,
   shouldShadowCompare,
@@ -89,6 +95,13 @@ export type {
   MigrationCity,
   CitiesMigrationAdapter,
 } from "./migration-types.js";
+
+export {
+  RegistryContainer,
+  withRegistryContainer,
+  getRegistryContainer,
+  requireRegistryContainer,
+} from "./registry-container.js";
 
 export { DeltaExporter } from "./delta-exporter.js";
 

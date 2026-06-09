@@ -126,19 +126,31 @@ This plan is organized so humans and AI agents can execute chunks in parallel wi
 - Logs include enough data to debug desync root causes.
 - Tooling can export a minimal repro packet for failures.
 
-## WP-011: Migration Adapters and Cutover 🚧 IN PROGRESS
+## WP-011: Migration Adapters and Cutover ✅ DONE
 
 **Scope**
 - Implement adapters from legacy object graph APIs to new envelopes.
 - Migrate subsystems in order: units -> cities -> research -> diplomacy/world.
 
-**Definition of Done**
+**Definition of Done** ✅
 - At least one subsystem is fully migrated end-to-end.
 - Legacy path remains functional for unmigrated subsystems.
 - Targeted shadow checks compare critical behaviors.
 
 Current progress:
 - Units and cities subsystem migration adapters + cutover routing/shadow hooks landed in `@civ-clone/engine-adapter`.
+- Shadow telemetry parity reporting helper (`buildMigrationParityReport`) is available for migration confidence checks.
+
+## WP-012: Per-match Registry Container 🚧 IN PROGRESS
+
+**Scope**
+- Provide per-match registry isolation utility for async multiplayer/server flows.
+- Support async-context binding with safe nested and parallel isolation.
+
+**Definition of Done**
+- Match-scoped container can be bound and resolved in async call chains.
+- Parallel matches do not leak registry state.
+- Demo + tests validate nested context behavior.
 
 ## Suggested Sequencing
 
@@ -147,7 +159,7 @@ Current progress:
 3. WP-006, WP-007
 4. WP-008 ✅, WP-009 ✅, WP-010 ✅
 5. WP-011
-6. WP-011 and progressive subsystem cutovers
+6. WP-012 and progressive subsystem cutovers
 
 ## Parallelization Opportunities
 
